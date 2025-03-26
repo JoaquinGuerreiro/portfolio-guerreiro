@@ -1,5 +1,11 @@
 <script setup>
 import { ref } from 'vue';
+import emailjs from '@emailjs/browser';
+
+// Configuración de EmailJS
+const SERVICE_ID = 'service_4ks4viw';
+const TEMPLATE_ID = 'template_o1fvmvm'; 
+const PUBLIC_KEY = 'U7kilm7E4KQsFhYZX'; 
 
 const formData = ref({
   name: '',
@@ -11,38 +17,50 @@ const formData = ref({
 const isSubmitting = ref(false);
 const isSubmitted = ref(false);
 const hasError = ref(false);
+const errorMessage = ref('');
 
 const submitForm = async () => {
   isSubmitting.value = true;
+  hasError.value = false;
+  errorMessage.value = '';
   
   try {
-    // Aquí integraremos formspree para enviar el correo
-    const response = await fetch('https://formspree.io/f/tu-id-de-formspree', { // Reemplaza con tu ID de formspree
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: formData.value.name,
-        email: formData.value.email,
-        subject: formData.value.subject,
-        message: formData.value.message,
-        _replyto: formData.value.email
-      })
-    });
+    // Preparar los parámetros para la plantilla de EmailJS
+    const templateParams = {
+      from_name: formData.value.name,
+      from_email: formData.value.email,
+      subject: `[Contacto Portfolio] ${formData.value.subject} - De: ${formData.value.name} (${formData.value.email})`,
+      message: formData.value.message,
+      to_name: 'Joaquín Guerreiro', 
+      reply_to: formData.value.email
+    };
     
-    if (response.ok) {
+    // Enviar el correo usando EmailJS
+    const response = await emailjs.send(
+      SERVICE_ID,
+      TEMPLATE_ID,
+      templateParams,
+      PUBLIC_KEY
+    );
+    
+    if (response.status === 200) {
       isSubmitted.value = true;
       formData.value = { name: '', email: '', subject: '', message: '' };
     } else {
       hasError.value = true;
+      errorMessage.value = 'Hubo un error al enviar el mensaje. Por favor, intenta nuevamente.';
     }
   } catch (error) {
     hasError.value = true;
+    errorMessage.value = 'Error de conexión. Verifica tu conexión a internet e intenta nuevamente.';
+    console.error('Error al enviar el formulario:', error);
   } finally {
     isSubmitting.value = false;
   }
 };
+
+// Inicializar EmailJS
+emailjs.init(PUBLIC_KEY);
 </script>
 
 <template>
@@ -101,7 +119,7 @@ const submitForm = async () => {
         
         <!-- Botón de CV destacado -->
         <div class="pt-6 pb-2 flex justify-center">
-          <a href="/cv/curriculum-joaquin-guerreiro.pdf" target="_blank" 
+          <a href="/cv/CV-JoaquinGuerreiro.pdf" target="_blank" 
              class="group flex items-center justify-center w-3/6 py-3 px-4 bg-primary text-slate-900 font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 transform hover:scale-[1.02]">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -188,7 +206,7 @@ const submitForm = async () => {
             </button>
           </div>
           <div v-if="hasError" class="text-red-400 mt-4 p-3 bg-red-400/10 rounded-lg">
-            Ha ocurrido un error, por favor intenta nuevamente.
+            {{ errorMessage || 'Ha ocurrido un error, por favor intenta nuevamente.' }}
           </div>
         </form>
 
