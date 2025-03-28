@@ -52,8 +52,8 @@ const certificates = [
     >
       <div class="flex flex-col md:flex-row md:justify-between md:items-start">
         <div>
-          <h3 class="text-xl font-bold text-primary mb-2">{{ cert.title }}</h3>
-          <p class="text-gray-300 font-bold italic">{{ cert.issuer }}</p>
+          <h3 class="text-2xl font-semibold text-primary mb-3">{{ cert.title }}</h3>
+          <p class="text-gray-300 font-semibold italic">{{ cert.issuer }}</p>
         </div>
         <div class="mt-2 md:mt-0 flex items-center gap-4">
           <span class="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary text-sm">
@@ -78,7 +78,7 @@ const certificates = [
           </a>
         </div>
       </div>
-      <p class="mt-4 text-gray-400">{{ cert.description }}</p>
+      <p class="mt-3 text-gray-400">{{ cert.description }}</p>
     </div>
   </div>
 </template>

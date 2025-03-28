@@ -209,7 +209,7 @@ const closeMenu = () => {
 
       <!-- Footer -->
       <footer class="text-center text-gray-400 py-6 border-t border-gray-800 mt-20">
-        <a href="#inicio"><img src="/src/assets/JG-png-logo.png" alt="Logo de Joaquín Guerreiro Apolonia, JG." class="mx-auto mb-4 w-9"></a>
+        <a href="#inicio"><img src="/src/assets/JG-png-logo.png" alt="Logo de Joaquín Guerreiro Apolonia, JG." class="mx-auto mb-4 w-9 inline-block hover:scale-105 transition-transform hover:brightness-125"></a>
         <p>&copy; {{ new Date().getFullYear() }} Joaquín Guerreiro Apolonia. Todos los derechos reservados.</p>
         <div class="flex justify-center mt-4 space-x-4">
 
