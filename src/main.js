@@ -2,6 +2,17 @@ import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
 import './style.css'
 import App from './App.vue'
+import { refreshTranslations, triggerLanguageChanged } from './utils/i18nHelper';
+
+// Controlar logs - establecer false para producción
+const DEBUG_MODE = false;
+
+// Función para logs controlados
+const debugLog = (...args) => {
+  if (DEBUG_MODE) {
+    console.log(...args);
+  }
+};
 
 // Definir mensajes de traducción directamente en el archivo
 const messages = {
@@ -131,7 +142,7 @@ const messages = {
   }
 };
 
-console.log('Mensajes de traducción definidos:', messages);
+debugLog('Mensajes de traducción definidos:', messages);
 
 // Función segura para acceder a localStorage
 function getLocalStorageItem(key, defaultValue) {
@@ -157,8 +168,34 @@ const i18n = createI18n({
   silentTranslationWarn: true,
   sync: true,
   missingWarn: false,
-  fallbackWarn: false
+  fallbackWarn: false,
+  runtimeOnly: false,
+  compositionOnly: true,
+  fullInstall: true
 });
+
+// Crear un método global para forzar la actualización de traducciones
+function forceI18nRefresh() {
+  // Usar la utilidad para disparar el evento de cambio de idioma
+  triggerLanguageChanged();
+  
+  // También actualizar directamente el DOM
+  const appElement = document.querySelector('#app');
+  if (appElement && appElement.__vue_app__) {
+    const vm = appElement.__vue_app__._instance;
+    if (vm && vm.proxy && typeof vm.proxy.$forceUpdate === 'function') {
+      vm.proxy.$forceUpdate();
+    }
+  }
+  
+  // Refrescar todas las traducciones visibles
+  refreshTranslations('body *[data-i18n], h1, h2, h3, p, a, button, label, span');
+}
+
+// Agregar al objeto window para poder acceder desde cualquier lugar
+if (typeof window !== 'undefined') {
+  window.forceI18nRefresh = forceI18nRefresh;
+}
 
 const app = createApp(App);
 app.use(i18n);
@@ -169,7 +206,47 @@ window.addEventListener('languageChanged', () => {
   if (appElement && appElement.__vue_app__) {
     const vm = appElement.__vue_app__._instance;
     if (vm && vm.proxy && typeof vm.proxy.$forceUpdate === 'function') {
+      // Forzar actualización del componente principal
       vm.proxy.$forceUpdate();
+      
+      // También actualizar los componentes hijos
+      if (vm.subTree && vm.subTree.children) {
+        setTimeout(() => {
+          // Recorrer el árbol de componentes y forzar actualización
+          const updateComponents = (components) => {
+            if (!components) return;
+            // Asegurarse de que components sea un array antes de usar forEach
+            if (Array.isArray(components)) {
+              components.forEach(component => {
+                if (component && component.component && component.component.proxy) {
+                  try {
+                    component.component.proxy.$forceUpdate();
+                  } catch (error) {
+                    debugLog('Error forzando actualización:', error);
+                  }
+                }
+                if (component && component.children) {
+                  updateComponents(component.children);
+                }
+              });
+            } else if (components.component && components.component.proxy) {
+              // Si no es un array, pero tiene un componente
+              try {
+                components.component.proxy.$forceUpdate();
+              } catch (error) {
+                debugLog('Error forzando actualización de componente individual:', error);
+              }
+              
+              if (components.children) {
+                updateComponents(components.children);
+              }
+            }
+          };
+          
+          updateComponents(vm.subTree.children);
+          debugLog('Actualizando componentes después del cambio de idioma');
+        }, 50);
+      }
     }
   }
 });
@@ -222,48 +299,65 @@ function replaceTranslationKeys() {
   function doReplace() {
     try {
       const currentLocale = i18n.global.locale.value;
+      debugLog('Aplicando traducciones para:', currentLocale);
       
       // Función auxiliar para reemplazar texto en nodos
       function processNode(node) {
         if (node.nodeType === Node.TEXT_NODE) {
           const text = node.nodeValue;
           Object.keys(translationKeys).forEach(key => {
-            if (text.includes(key)) {
+            if (text && text.includes(key)) {
               node.nodeValue = text.replace(key, translationKeys[key][currentLocale]);
             }
           });
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
-            node.childNodes.forEach(child => processNode(child));
+            // Procesar atributos para elementos como placeholders, titles, etc.
+            if (node.hasAttributes()) {
+              for (let i = 0; i < node.attributes.length; i++) {
+                const attr = node.attributes[i];
+                Object.keys(translationKeys).forEach(key => {
+                  if (attr.value && attr.value.includes(key)) {
+                    attr.value = attr.value.replace(key, translationKeys[key][currentLocale]);
+                  }
+                });
+              }
+            }
+            
+            // Procesar elementos hijos
+            Array.from(node.childNodes).forEach(child => processNode(child));
           }
         }
       }
       
       // Procesar todo el cuerpo del documento
       processNode(document.body);
-      console.log('Traducciones actualizadas para:', currentLocale);
     } catch (error) {
-      console.warn('Error al actualizar traducciones:', error);
+      debugLog('Error al actualizar traducciones:', error);
     }
   }
 
-  // Escuchar eventos
+  // Escuchar eventos con tiempos más cortos
   document.addEventListener('languageChanged', () => {
-    setTimeout(doReplace, 0);
+    // Ejecutar primero inmediatamente
+    doReplace();
+    
+    // Una actualización adicional después de un corto periodo
+    setTimeout(doReplace, 200);
   });
 
   window.addEventListener('DOMContentLoaded', doReplace);
   window.addEventListener('load', doReplace);
 
-  // Ejecutar periódicamente durante los primeros segundos
+  // Ejecutar solo unas pocas veces en lugar de 15 veces
   let count = 0;
   const interval = setInterval(() => {
     doReplace();
     count++;
-    if (count >= 10) clearInterval(interval);
-  }, 500);
+    if (count >= 3) clearInterval(interval); // Reducido de 15 a 3 veces
+  }, 250);
 
-  // Observar cambios en el DOM
+  // Observar cambios en el DOM con una configuración más ligera
   const observer = new MutationObserver(() => {
     doReplace();
   });
@@ -272,10 +366,36 @@ function replaceTranslationKeys() {
     observer.observe(document.body, {
       childList: true,
       subtree: true,
-      characterData: true
+      characterData: false, // Reducir el alcance de observación
+      attributes: false,    // Reducir el alcance de observación
     });
   });
 }
 
 // Ejecutar la función de reemplazo
 replaceTranslationKeys();
+
+// Agregar evento para asegurar que las traducciones se apliquen al cargar la página
+if (typeof window !== 'undefined') {
+  window.addEventListener('DOMContentLoaded', () => {
+    debugLog('DOMContentLoaded: Aplicando traducciones iniciales');
+    
+    // Aplicar con un pequeño retraso para asegurar que todos los componentes estén montados
+    setTimeout(() => {
+      const currentLang = i18n.global.locale.value;
+      debugLog('Idioma inicial detectado:', currentLang);
+      
+      // Una sola actualización en lugar de múltiples
+      triggerLanguageChanged();
+      refreshTranslations('body *');
+    }, 100);
+  });
+  
+  // Una última actualización después de la carga completa
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      triggerLanguageChanged();
+      refreshTranslations('body *');
+    }, 500);
+  });
+}

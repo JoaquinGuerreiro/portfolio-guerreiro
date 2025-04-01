@@ -1,3 +1,6 @@
+// Este archivo exporta un array simple de proyectos
+// No debe ser convertido a un objeto reactivo directamente
+// Para uso reactivo, importarlo y convertirlo a ref en el componente que lo usa
 export default [
     { 
       title: {

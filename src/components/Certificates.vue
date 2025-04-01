@@ -1,9 +1,10 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { ref, watch, nextTick } from 'vue';
 
 const { t, locale } = useI18n();
 
-const certificates = [
+const certificates = ref([
   {
     title: {
       es: "Técnico Superior en Diseño y Programación Web",
@@ -74,7 +75,40 @@ const certificates = [
     pdfUrl: "/certificates/certif-digitaliza-negocio.pdf",
     inProgress: false
   },
-];
+]);
+
+// Agregar watcher para forzar actualización cuando cambie el idioma
+watch(locale, () => {
+  // Forzar actualización de traducciones
+  nextTick(() => {
+    if (typeof document !== 'undefined') {
+      // Disparar evento personalizado para actualizar este componente
+      document.dispatchEvent(new CustomEvent('certificatesLocaleUpdated'));
+      
+      // Manera segura de forzar reactividad - creamos una copia inicial del array
+      const certsCopy = [...certificates.value];
+      certificates.value = certsCopy;
+    }
+  });
+}, { immediate: true });
+
+// Escuchar eventos de actualización de idioma
+if (typeof window !== 'undefined') {
+  window.addEventListener('languageChanged', () => {
+    // Forzar reactividad utilizando una copia reactiva
+    setTimeout(() => {
+      const elements = document.querySelectorAll('#certificaciones .text-primary, #certificaciones .text-gray-400');
+      elements.forEach(el => {
+        if (el) {
+          el.style.opacity = '0.99';
+          setTimeout(() => { 
+            if (el) el.style.opacity = '1'; 
+          }, 50);
+        }
+      });
+    }, 100);
+  });
+}
 </script>
 
 <template>

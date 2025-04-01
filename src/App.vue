@@ -4,6 +4,7 @@ import Projects from './components/Projects.vue';
 import Contact from './components/Contact.vue';
 import Certificates from './components/Certificates.vue';
 import { useI18n } from 'vue-i18n';
+import { refreshTranslations, triggerLanguageChanged } from './utils/i18nHelper';
 
 const { locale, t } = useI18n();
 const currentLanguage = computed(() => locale.value);
@@ -29,22 +30,67 @@ const habilidades = ref([
 ]);
 
 const toggleLanguage = async () => {
-  const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
-  locale.value = newLang;
-  localStorage.setItem('language', newLang);
-  
-  // Actualizar las habilidades que necesitan traducción
-  habilidades.value = habilidades.value.map(hab => ({
-    ...hab,
-    nombre: hab.icono.includes('fa-') ? t(
-      hab.icono.includes('file-word') ? 'skills.officePackage' :
-      hab.icono.includes('palette') ? 'skills.graphicDesign' :
-      'skills.uxui'
-    ) : hab.nombre
-  }));
-  
-  await nextTick();
-  window.dispatchEvent(new Event('languageChanged'));
+  try {
+    const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
+    locale.value = newLang;
+    localStorage.setItem('language', newLang);
+    
+    // Actualizar las habilidades que necesitan traducción
+    habilidades.value = habilidades.value.map(hab => ({
+      ...hab,
+      nombre: hab.icono.includes('fa-') ? t(
+        hab.icono.includes('file-word') ? 'skills.officePackage' :
+        hab.icono.includes('palette') ? 'skills.graphicDesign' :
+        'skills.uxui'
+      ) : hab.nombre
+    }));
+    
+    await nextTick();
+    
+    // Disparar el evento una vez en lugar de múltiples veces
+    if (typeof window !== 'undefined') {
+      // Usar las utilidades para disparar el evento de cambio de idioma
+      triggerLanguageChanged();
+      
+      // Actualizar una única vez con un selector más específico
+      setTimeout(() => {
+        refreshTranslations('h1, h2, h3, h4, p, a, button, label, span, #habilidades *, #proyectos *, #certificaciones *, #contacto *');
+        
+        // Forzar actualización en componentes específicos
+        try {
+          const components = [
+            document.querySelector('#proyectos'), 
+            document.querySelector('#certificaciones'),
+            document.querySelector('#contacto')
+          ];
+          
+          if (components && components.length) {
+            components.forEach(component => {
+              if (component && component.__vueParentComponent) {
+                try {
+                  const vm = component.__vueParentComponent.ctx;
+                  if (vm && typeof vm.$forceUpdate === 'function') {
+                    vm.$forceUpdate();
+                  }
+                } catch (e) {
+                  console.warn('Error al actualizar componente:', e);
+                }
+              }
+            });
+          }
+          
+          // Usar la función global si está disponible
+          if (typeof window.forceI18nRefresh === 'function') {
+            window.forceI18nRefresh();
+          }
+        } catch (error) {
+          console.warn('Error en actualización de componentes:', error);
+        }
+      }, 200);
+    }
+  } catch (error) {
+    console.error('Error al cambiar idioma:', error);
+  }
 };
 
 const activeSection = ref('');
@@ -105,8 +151,8 @@ const closeMenu = () => {
     </div>
 
     <!-- Efecto de gradiente animado -->
-    <div class="fixed inset-0 opacity-20 z-0">
-      <div class="absolute inset-0 bg-gradient-to-r from-primary via-blue-500 to-primary animate-gradient"></div>
+    <div class="fixed inset-0 opacity-05 z-0">
+      <div class="absolute inset-0 bg-gradient-to-r from-dark via-primary/10 to-dark animate-gradient"></div>
     </div>
 
     <!-- Contenido principal -->
@@ -281,8 +327,9 @@ const closeMenu = () => {
   bottom: 0;
   background: 
     linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   z-index: -10;
+  filter: blur(0.5px);
 }
 
 /* MATRIZ DE CÓDIGO */
@@ -295,6 +342,7 @@ const closeMenu = () => {
   overflow: hidden;
   z-index: -5;
   pointer-events: none;
+  filter: blur(3px);
 }
 
 .matrix-code::before, .matrix-code::after {
