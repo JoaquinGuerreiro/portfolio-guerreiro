@@ -1,10 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Projects from './components/Projects.vue';
 import Contact from './components/Contact.vue';
 import Certificates from './components/Certificates.vue';
+import { useI18n } from 'vue-i18n';
 
-const habilidades = ref([
+const { locale, t } = useI18n();
+const currentLanguage = computed(() => locale.value);
+
+const toggleLanguage = () => {
+  const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
+  locale.value = newLang;
+  localStorage.setItem('language', newLang);
+};
+
+const habilidades = computed(() => [
   { nombre: 'HTML', icono: 'devicon-html5-plain' },
   { nombre: 'CSS', icono: 'devicon-css3-plain' },
   { nombre: 'JavaScript', icono: 'devicon-javascript-plain' },
@@ -18,9 +28,9 @@ const habilidades = ref([
   { nombre: 'WordPress', icono: 'devicon-wordpress-plain' },
   { nombre: 'Adobe Photoshop', icono: 'devicon-photoshop-plain' },
   { nombre: 'Adobe Illustrator', icono: 'devicon-illustrator-plain' },
-  { nombre: 'Paquete de Office', icono: 'fas fa-file-word' },
-  { nombre: 'Diseño Gráfico', icono: 'fas fa-palette' },
-  { nombre: 'Diseño UX/UI', icono: 'fas fa-pencil-ruler' }
+  { nombre: t('skills.officePackage'), icono: 'fas fa-file-word' },
+  { nombre: t('skills.graphicDesign'), icono: 'fas fa-palette' },
+  { nombre: t('skills.uxui'), icono: 'fas fa-pencil-ruler' }
 ]);
 
 const activeSection = ref('');
@@ -91,9 +101,22 @@ const closeMenu = () => {
       <nav class="fixed top-0 left-0 right-0 z-50 py-4 bg-dark/80 backdrop-blur-md shadow-md">
         <div class="container mx-auto px-4 max-w-6xl flex justify-between items-center">
           <!-- Logo de la marca -->
-          <div class="text-primary font-bold">
-            <a href="#inicio" class="hidden md:inline text-2xl hover:brightness-125 transition-all">Joaquín Guerreiro</a>
-            <span class="md:hidden text-2xl">JG</span>
+          <div class="flex items-center gap-4">
+            <div class="text-primary font-bold">
+              <a href="#inicio" class="hidden md:inline text-2xl hover:brightness-125 transition-all">Joaquín Guerreiro</a>
+              <span class="md:hidden text-2xl">JG</span>
+            </div>
+            
+            <!-- Botón de idioma -->
+            <div class="relative">
+              <button 
+                @click="toggleLanguage"
+                class="px-3 py-1 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors flex items-center gap-2"
+              >
+                <i class="fas fa-globe text-md"></i>
+                <span class="text-md font-medium">{{ currentLanguage.toUpperCase() }}</span>
+              </button>
+            </div>
           </div>
           
           <!-- Menú de navegación (escritorio) -->
@@ -104,12 +127,14 @@ const closeMenu = () => {
                 class="py-2 px-1 text-lg font-medium relative group transition-all"
                 :class="activeSection === section ? 'text-primary brightness-125' : 'text-gray-300 hover:text-white'"
               >
+                {{ $t(`nav.${section === 'habilidades' ? 'skills' : 
+                            section === 'proyectos' ? 'projects' : 
+                            section === 'certificaciones' ? 'certifications' : 'contact'}`) }}
                 <!-- Subrayado animado -->
-                <span class="block w-full h-0.5 absolute bottom-0 left-0 bg-primary origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" 
-                      :class="activeSection === section ? 'scale-x-100' : ''"></span>
-                
-                <!-- Texto capitalizado -->
-                {{ section.charAt(0).toUpperCase() + section.slice(1) }}
+                <span 
+                  class="block w-full h-0.5 absolute bottom-0 left-0 bg-primary origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" 
+                  :class="activeSection === section ? 'scale-x-100' : ''"
+                ></span>
               </a>
             </li>
           </ul>
@@ -162,13 +187,13 @@ const closeMenu = () => {
           </div>
         </div>
         <h1 class="text-5xl font-bold mb-4 text-white">Joaquín Guerreiro Apolonia</h1>
-        <p class="text-xl text-primary"><strong>Desarrollador y Programador Web</strong></p>
+        <p class="text-xl text-primary"><strong>{{ $t('header.role') }}</strong></p>
     </header>
     
       <!-- Sección de habilidades -->
       <section id="habilidades" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          Habilidades y Tecnologías
+          {{ $t('sections.skills.title') }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -183,7 +208,7 @@ const closeMenu = () => {
       <!-- Sección de proyectos -->
       <section id="proyectos" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          Mis Proyectos
+          {{ $t('sections.projects.title') }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
       <Projects />
@@ -192,7 +217,7 @@ const closeMenu = () => {
       <!-- Sección de certificados -->
       <section id="certificaciones" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          Certificaciones
+          {{ $t('sections.certifications.title') }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <Certificates />
@@ -201,7 +226,7 @@ const closeMenu = () => {
       <!-- Sección de contacto -->
       <section id="contacto" class="mb-16 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          Contacto
+          {{ $t('sections.contact.title') }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <Contact />
@@ -210,7 +235,7 @@ const closeMenu = () => {
       <!-- Footer -->
       <footer class="text-center text-gray-400 py-6 border-t border-gray-800 mt-20">
         <a href="#inicio"><img src="/src/assets/JG-png-logo.png" alt="Logo de Joaquín Guerreiro Apolonia, JG." class="mx-auto mb-4 w-9 inline-block hover:scale-105 transition-transform hover:brightness-125"></a>
-        <p>&copy; {{ new Date().getFullYear() }} Joaquín Guerreiro Apolonia. Todos los derechos reservados.</p>
+        <p>&copy; {{ new Date().getFullYear() }} Joaquín Guerreiro Apolonia. {{ $t('header.rights') }}</p>
         <div class="flex justify-center mt-4 space-x-4">
 
           <a href="https://www.linkedin.com/in/joaquin-guerreiro-apolonia/" target="_blank" class="text-primary hover:text-white transition-colors">

@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import emailjs from '@emailjs/browser';
+
+const { t, locale } = useI18n();
 
 // Configuración de EmailJS
 const SERVICE_ID = 'service_4ks4viw';
@@ -19,23 +22,26 @@ const isSubmitted = ref(false);
 const hasError = ref(false);
 const errorMessage = ref('');
 
+// Función para obtener la ruta del CV según el idioma
+const getCvPath = () => {
+  return locale.value === 'en' ? '/cv/Resume-JoaquinGuerreiro.pdf' : '/cv/CV-JoaquinGuerreiro.pdf';
+};
+
 const submitForm = async () => {
   isSubmitting.value = true;
   hasError.value = false;
   errorMessage.value = '';
   
   try {
-    // Preparar los parámetros para la plantilla de EmailJS
     const templateParams = {
       from_name: formData.value.name,
       from_email: formData.value.email,
-      subject: `[Contacto Portfolio] ${formData.value.subject} - De: ${formData.value.name} (${formData.value.email})`,
+      subject: `[Portfolio Contact] ${formData.value.subject} - From: ${formData.value.name} (${formData.value.email})`,
       message: formData.value.message,
-      to_name: 'Joaquín Guerreiro', 
+      to_name: 'Joaquín Guerreiro',
       reply_to: formData.value.email
     };
     
-    // Enviar el correo usando EmailJS
     const response = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
@@ -48,12 +54,12 @@ const submitForm = async () => {
       formData.value = { name: '', email: '', subject: '', message: '' };
     } else {
       hasError.value = true;
-      errorMessage.value = 'Hubo un error al enviar el mensaje. Por favor, intenta nuevamente.';
+      errorMessage.value = t('sections.contact.form.error');
     }
   } catch (error) {
     hasError.value = true;
-    errorMessage.value = 'Error de conexión. Verifica tu conexión a internet e intenta nuevamente.';
-    console.error('Error al enviar el formulario:', error);
+    errorMessage.value = t('sections.contact.form.error');
+    console.error('Error sending form:', error);
   } finally {
     isSubmitting.value = false;
   }
@@ -69,8 +75,8 @@ emailjs.init(PUBLIC_KEY);
       <!-- Info de contacto -->
       <div class="md:col-span-2 space-y-6">
         <div>
-          <h3 class="text-xl font-bold text-white mb-2">Información de contacto</h3>
-          <p class="text-gray-400">Completá el formulario o contactame directamente a través de:</p>
+          <h3 class="text-xl font-bold text-white mb-2">{{ $t('sections.contact.info') }}</h3>
+          <p class="text-gray-400">{{ $t('sections.contact.form.fillOrContact') }}</p>
         </div>
         
         <!-- Email con enlace mailto -->
@@ -79,7 +85,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">Email</h4>
+            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.email') }}</h4>
             <p class="text-gray-400">joaquinguerreiro12@gmail.com</p>
           </div>
         </a>
@@ -90,7 +96,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a2 2 0 011.94 1.5l.72 2.88a2 2 0 01-.45 1.95l-2.1 2.1a16.001 16.001 0 006.36 6.36l2.1-2.1a2 2 0 011.95-.45l2.88.72a2 2 0 011.5 1.94V19a2 2 0 01-2 2h-1a19.002 19.002 0 01-18-18V5z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">Teléfono</h4>
+            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.phone') }}</h4>
             <p class="text-gray-400">+54 9 11 5977-0182</p>
           </div>
         </a>
@@ -101,7 +107,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11.37a4 4 0 11-8 0 4 4 0 018 0zM17.5 6.5h.01" />
           </svg>
             <div>
-              <h4 class="text-sm font-medium text-white">Instagram</h4>
+              <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.instagram') }}</h4>
               <p class="text-gray-400">@joakoguerreiro</p>
             </div>
         </a>
@@ -112,19 +118,19 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">Ubicación</h4>
+            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.location') }}</h4>
             <p class="text-gray-400">Ciudad Autónoma de Buenos Aires, Argentina</p>
           </div>
         </div>
         
         <!-- Botón de CV destacado -->
         <div class="pt-6 pb-2 flex justify-center">
-          <a href="/cv/CV-JoaquinGuerreiro.pdf" target="_blank" 
+          <a :href="getCvPath()" target="_blank" 
              class="group flex items-center justify-center w-3/6 py-3 px-4 bg-primary text-slate-900 font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 transform hover:scale-[1.02]">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Descargar CV
+            {{ $t('sections.contact.downloadCV') }}
           </a>
         </div>
         
@@ -150,7 +156,7 @@ emailjs.init(PUBLIC_KEY);
       <div class="md:col-span-3">
         <form v-if="!isSubmitted" @submit.prevent="submitForm" class="space-y-6">
           <div>
-            <label for="name" class="block mb-2 text-left text-sm font-medium text-gray-300">Nombre</label>
+            <label for="name" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.name') }}</label>
             <input 
               type="text" 
               id="name" 
@@ -160,7 +166,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="email" class="block mb-2 text-left text-sm font-medium text-gray-300">Email</label>
+            <label for="email" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.email') }}</label>
             <input 
               type="email" 
               id="email" 
@@ -170,7 +176,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="subject" class="block mb-2 text-left text-sm font-medium text-gray-300">Asunto</label>
+            <label for="subject" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.subject') }}</label>
             <input 
               type="text" 
               id="subject" 
@@ -180,7 +186,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="message" class="block mb-2 text-left text-sm font-medium text-gray-300">Mensaje</label>
+            <label for="message" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.message') }}</label>
             <textarea 
               id="message" 
               v-model="formData.message" 
@@ -200,9 +206,9 @@ emailjs.init(PUBLIC_KEY);
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Enviando...
+                {{ $t('sections.contact.form.sending') }}
               </span>
-              <span v-else>Enviar mensaje</span>
+              <span v-else>{{ $t('sections.contact.form.send') }}</span>
             </button>
           </div>
           <div v-if="hasError" class="text-red-400 mt-4 p-3 bg-red-400/10 rounded-lg">
@@ -216,13 +222,13 @@ emailjs.init(PUBLIC_KEY);
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2">¡Mensaje enviado con éxito!</h3>
-          <p class="text-gray-300 mb-6">Gracias por contactarme. Te responderé a la brevedad.</p>
+          <h3 class="text-xl font-bold mb-2">{{ $t('sections.contact.form.success') }}</h3>
+          <p class="text-gray-300 mb-6">{{ $t('sections.contact.form.thanks') }}</p>
           <button 
             @click="isSubmitted = false" 
             class="py-2 px-4 bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors"
           >
-            Enviar otro mensaje
+            {{ $t('sections.contact.form.tryAgain') }}
           </button>
         </div>
       </div>

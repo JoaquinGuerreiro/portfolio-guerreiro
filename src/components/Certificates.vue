@@ -1,42 +1,76 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
+
+const { t, locale } = useI18n();
+
 const certificates = [
   {
-    title: "Técnico Superior en Diseño y Programación Web",
+    title: {
+      es: "Técnico Superior en Diseño y Programación Web",
+      en: "Higher Technician in Web Design and Programming"
+    },
     issuer: "Escuela de Arte Multimedial Da Vinci",
     date: "2023/25",
-    description: "Carrera completa de Desarrollo Web Full Stack. Creación de Páginas Web RESS (Responsive + Server Side Components), y Aplicaciones Móviles (PWA). Conocimientos avanzados en IOT, manejo de APIs, Marketing Digital, Servidores, Diseño UX, Análisis de Datos, Creación de Contenido y Producción de Videos Web. Trabajo con IA aplicada a la resolución de bloques de código para implementaciones a gran escala.",
+    description: {
+      es: "Carrera completa de Desarrollo Web Full Stack. Creación de Páginas Web RESS (Responsive + Server Side Components), y Aplicaciones Móviles (PWA). Conocimientos avanzados en IOT, manejo de APIs, Marketing Digital, Servidores, Diseño UX, Análisis de Datos, Creación de Contenido y Producción de Videos Web. Trabajo con IA aplicada a la resolución de bloques de código para implementaciones a gran escala.",
+      en: "Complete Full Stack Web Development career. Creation of RESS Web Pages (Responsive + Server Side Components), and Mobile Applications (PWA). Advanced knowledge in IOT, API handling, Digital Marketing, Servers, UX Design, Data Analysis, Content Creation and Web Video Production. Work with AI applied to code block resolution for large-scale implementations."
+    },
     pdfUrl: "",
     inProgress: true
   },
   {
-    title: "Curso de introducción al desarrollo web: HTML y CSS (2/2)",
+    title: {
+      es: "Curso de introducción al desarrollo web: HTML y CSS (2/2)",
+      en: "Introduction to Web Development: HTML and CSS (2/2)"
+    },
     issuer: "Google Digital Academy (Skillshop)",
     date: "2022",
-    description: "Creación de páginas web profesionales adaptables a distintos dispositivos de la mano de la Universidad de Alicante. Formación con el lenguaje CSS para poder realizar webs completas de manera profesional.",
+    description: {
+      es: "Creación de páginas web profesionales adaptables a distintos dispositivos de la mano de la Universidad de Alicante. Formación con el lenguaje CSS para poder realizar webs completas de manera profesional.",
+      en: "Creation of professional responsive web pages in collaboration with the University of Alicante. Training in CSS language to create complete websites professionally."
+    },
     pdfUrl: "/certificates/certif-desarrollo-webII.pdf",
     inProgress: false
   },
   {
-    title: "Curso de introducción al desarrollo web: HTML y CSS (1/2)",
+    title: {
+      es: "Curso de introducción al desarrollo web: HTML y CSS (1/2)",
+      en: "Introduction to Web Development: HTML and CSS (1/2)"
+    },
     issuer: "Google Digital Academy (Skillshop)",
     date: "2022",
-    description: "Creación de páginas web profesionales adaptables a distintos dispositivos de la mano de la Universidad de Alicante. Nacimiento de la Web y cómo ha llegado a ser lo que es hoy. Creación de páginas web correctas de manera profesional utilizando HTML5.",
+    description: {
+      es: "Creación de páginas web profesionales adaptables a distintos dispositivos de la mano de la Universidad de Alicante. Nacimiento de la Web y cómo ha llegado a ser lo que es hoy. Creación de páginas web correctas de manera profesional utilizando HTML5.",
+      en: "Creation of professional responsive web pages in collaboration with the University of Alicante. The birth of the Web and how it has become what it is today. Professional creation of proper web pages using HTML5."
+    },
     pdfUrl: "/certificates/certif-desarrollo-webI.pdf",
     inProgress: false
   },
   {
-    title: "Protege tu Negocio: Ciberseguridad en el Teletrabajo",
+    title: {
+      es: "Protege tu Negocio: Ciberseguridad en el Teletrabajo",
+      en: "Protect Your Business: Cybersecurity in Remote Work"
+    },
     issuer: "Google Digital Academy (Skillshop)",
     date: "2022",
-    description: "Descubre cómo implantar el teletrabajo de forma segura y eficiente de la mano de INCIBE. Un programa de Innovación en Ciberseguridad de la PYME impulsado por la Secretaría General de Industria y de la PYME (SGIPYME) del Ministerio de Industria, Comercio y Turismo y gestionado por EOI.",
+    description: {
+      es: "Descubre cómo implantar el teletrabajo de forma segura y eficiente de la mano de INCIBE. Un programa de Innovación en Ciberseguridad de la PYME impulsado por la Secretaría General de Industria y de la PYME (SGIPYME) del Ministerio de Industria, Comercio y Turismo y gestionado por EOI.",
+      en: "Learn how to implement remote work securely and efficiently with INCIBE. An SME Cybersecurity Innovation program promoted by the General Secretariat of Industry and SME (SGIPYME) of the Ministry of Industry, Commerce and Tourism and managed by EOI."
+    },
     pdfUrl: "/certificates/certif-ciberseguridad.pdf",
     inProgress: false
   },
   {
-    title: "Digitaliza paso a paso tu negocio con herramientas de Google",
+    title: {
+      es: "Digitaliza paso a paso tu negocio con herramientas de Google",
+      en: "Digitize your business step by step with Google tools"
+    },
     issuer: "Google Digital Academy (Skillshop)",
     date: "2022",
-    description: "Curso para conseguir que tu negocio sea visible online y llegue a un mayor número de clientes. Aprenderás el funcionamiento de herramientas como Perfil de Empresa (antiguo Google My Business), YouTube o Google Forms.",
+    description: {
+      es: "Curso para conseguir que tu negocio sea visible online y llegue a un mayor número de clientes. Aprenderás el funcionamiento de herramientas como Perfil de Empresa (antiguo Google My Business), YouTube o Google Forms.",
+      en: "Course to make your business visible online and reach more customers. You will learn how to use tools like Business Profile (formerly Google My Business), YouTube, and Google Forms."
+    },
     pdfUrl: "/certificates/certif-digitaliza-negocio.pdf",
     inProgress: false
   },
@@ -52,7 +86,9 @@ const certificates = [
     >
       <div class="flex flex-col md:flex-row md:justify-between md:items-start">
         <div>
-          <h3 class="text-2xl font-semibold text-primary mb-3">{{ cert.title }}</h3>
+          <h3 class="text-2xl font-semibold text-primary mb-3">
+            {{ typeof cert.title === 'object' ? cert.title[locale] : cert.title }}
+          </h3>
           <p class="text-gray-300 font-semibold italic">{{ cert.issuer }}</p>
         </div>
         <div class="mt-2 md:mt-0 flex items-center gap-4">
@@ -65,7 +101,7 @@ const certificates = [
             disabled
           >
             <i class="fas fa-file-alt"></i>
-            Título en Trámite
+            {{ $t('sections.certifications.inProgress') }}
           </button>
           <a
             v-else-if="cert.pdfUrl"
@@ -74,11 +110,13 @@ const certificates = [
             class="px-4 py-2 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
           >
             <i class="fas fa-file-pdf"></i>
-            Certificado
+            {{ $t('sections.projects.certificate') }}
           </a>
         </div>
       </div>
-      <p class="mt-3 text-gray-400">{{ cert.description }}</p>
+      <p class="mt-3 text-gray-400">
+        {{ typeof cert.description === 'object' ? cert.description[locale] : cert.description }}
+      </p>
     </div>
   </div>
 </template>
