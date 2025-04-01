@@ -251,7 +251,105 @@ window.addEventListener('languageChanged', () => {
 
 app.mount('#app');
 
-// SOLUCIÓN PARA REEMPLAZAR CLAVES DE TRADUCCIÓN EN MODO PRODUCCIÓN
+// Agregar interceptor para asegurarse de que las traducciones se apliquen después
+// de la renderización del componente
+app.mixin({
+  updated() {
+    /* 
+    if (this.$options.name && (
+      this.$options.name.includes('Project') || 
+      this.$options.name.includes('Certificate') || 
+      this.$options.name.includes('Contact')
+    )) {
+      debugLog('Componente actualizado:', this.$options.name);
+      
+      // Forzar un re-render manual para asegurar que las traducciones se apliquen
+      setTimeout(() => {
+        const vm = this;
+        
+        // Función recursiva para encontrar y actualizar componentes con traducciones
+        function updateComponents(children) {
+          if (!children) return;
+          
+          for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            if (!child) continue;
+            
+            if (child.component && child.component.proxy) {
+              // Solo actualizar componentes que tenemos problemas de traducción
+              const name = child.component.type.name;
+              if (name && (
+                name.includes('Project') || 
+                name.includes('Certificate') || 
+                name.includes('Contact')
+              )) {
+                try {
+                  child.component.proxy.$forceUpdate();
+                } catch (error) {
+                  debugLog('Error actualizando componente:', error);
+                }
+              }
+            }
+            
+            // Procesar hijos recursivamente
+            if (child.children) {
+              updateComponents(child.children);
+            }
+          }
+        };
+        
+        updateComponents(vm.subTree.children);
+        debugLog('Actualizando componentes después del cambio de idioma');
+      }, 50);
+    }
+    */
+  }
+});
+
+// Agregar evento para asegurar que las traducciones se apliquen al cargar la página
+if (typeof window !== 'undefined') {
+  // Verificar si hay un parámetro de idioma en la URL y usarlo
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get('lang');
+      
+      if (langParam && (langParam === 'es' || langParam === 'en') && 
+          langParam !== i18n.global.locale.value) {
+        i18n.global.locale.value = langParam;
+        localStorage.setItem('locale', langParam);
+        debugLog('Idioma actualizado desde URL parameter:', langParam);
+      }
+    } catch (e) {
+      // Ignorar errores con los parámetros de URL
+    }
+    
+    debugLog('DOMContentLoaded: Aplicando traducciones iniciales');
+    
+    // Aplicar con un pequeño retraso para asegurar que todos los componentes estén montados
+    setTimeout(() => {
+      const currentLang = i18n.global.locale.value;
+      debugLog('Idioma inicial detectado:', currentLang);
+      
+      // Una sola actualización en lugar de múltiples
+      triggerLanguageChanged();
+      refreshTranslations('body *');
+    }, 100);
+  });
+  
+  // Una última actualización después de la carga completa
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      triggerLanguageChanged();
+      refreshTranslations('body *');
+      // doReplace ya no es necesario por el enfoque directo de locale
+      // doReplace(); // Asegurarnos de que las traducciones se apliquen al final
+    }, 500);
+  });
+}
+
+
+/*
 function replaceTranslationKeys() {
   if (typeof window === 'undefined') return;
   
@@ -374,44 +472,4 @@ function replaceTranslationKeys() {
 
 // Ejecutar la función de reemplazo
 replaceTranslationKeys();
-
-// Agregar evento para asegurar que las traducciones se apliquen al cargar la página
-if (typeof window !== 'undefined') {
-  // Verificar si hay un parámetro de idioma en la URL y usarlo
-  window.addEventListener('DOMContentLoaded', () => {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const langParam = urlParams.get('lang');
-      
-      if (langParam && (langParam === 'es' || langParam === 'en') && 
-          langParam !== i18n.global.locale.value) {
-        i18n.global.locale.value = langParam;
-        localStorage.setItem('language', langParam);
-        debugLog('Idioma actualizado desde URL parameter:', langParam);
-      }
-    } catch (e) {
-      // Ignorar errores con los parámetros de URL
-    }
-    
-    debugLog('DOMContentLoaded: Aplicando traducciones iniciales');
-    
-    // Aplicar con un pequeño retraso para asegurar que todos los componentes estén montados
-    setTimeout(() => {
-      const currentLang = i18n.global.locale.value;
-      debugLog('Idioma inicial detectado:', currentLang);
-      
-      // Una sola actualización en lugar de múltiples
-      triggerLanguageChanged();
-      refreshTranslations('body *');
-    }, 100);
-  });
-  
-  // Una última actualización después de la carga completa
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      triggerLanguageChanged();
-      refreshTranslations('body *');
-      doReplace(); // Asegurarnos de que las traducciones se apliquen al final
-    }, 500);
-  });
-}
+*/

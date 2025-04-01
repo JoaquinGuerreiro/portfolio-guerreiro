@@ -2,15 +2,27 @@
  * Utilidades para ayudar con el manejo de i18n en la aplicación
  */
 
-// Desactivar logs en producción
+// Función para mostrar mensajes de depuración solo si estamos en modo de depuración
 const DEBUG_MODE = false;
-
-// Función para logs controlados
 const debugLog = (...args) => {
   if (DEBUG_MODE) {
-    console.warn(...args);
+    console.log(...args);
   }
 };
+
+/**
+ * Dispara un evento personalizado para notificar a los componentes que el idioma ha cambiado
+ */
+export function triggerLanguageChanged() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    window.dispatchEvent(new CustomEvent('languageChanged'));
+    debugLog('Evento de cambio de idioma disparado');
+  } catch (error) {
+    console.warn('Error al disparar evento de cambio de idioma:', error);
+  }
+}
 
 /**
  * Fuerza una actualización de los textos traducidos en el DOM
@@ -46,25 +58,13 @@ export function refreshTranslations(selector = '[data-i18n]') {
 }
 
 /**
- * Dispara un evento de cambio de idioma
- */
-export function triggerLanguageChanged() {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    window.dispatchEvent(new Event('languageChanged'));
-  } catch (error) {
-    debugLog('Error disparando evento languageChanged:', error);
-  }
-}
-
-/**
- * Aplica traducciones a un texto basado en un objeto de traducciones
+ * 
  * @param {string} text - Texto a traducir
  * @param {Object} translations - Diccionario de traducciones
  * @param {string} locale - Código de idioma actual
  * @returns {string} - Texto traducido
  */
+/* 
 export function applyTranslations(text, translations, locale) {
   if (!text || !translations || !locale) return text;
   
@@ -87,9 +87,11 @@ export function applyTranslations(text, translations, locale) {
     return text;
   }
 }
+*/
 
+// Exportar todas las funciones como un objeto por defecto
 export default {
   refreshTranslations,
   triggerLanguageChanged,
-  applyTranslations
+  // applyTranslations
 }; 
