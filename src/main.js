@@ -337,17 +337,19 @@ function replaceTranslationKeys() {
     }
   }
 
+  // Exponer la función al objeto window para poder acceder desde otros componentes
+  if (typeof window !== 'undefined') {
+    window.doReplace = doReplace;
+  }
+
   // Escuchar eventos con tiempos más cortos
   document.addEventListener('languageChanged', () => {
     // Ejecutar primero inmediatamente
     doReplace();
     
-    // Una actualización adicional después de un corto periodo
+    // Ejecutar de nuevo después de un breve retraso
     setTimeout(doReplace, 200);
   });
-
-  window.addEventListener('DOMContentLoaded', doReplace);
-  window.addEventListener('load', doReplace);
 
   // Ejecutar solo unas pocas veces en lugar de 15 veces
   let count = 0;
@@ -377,7 +379,22 @@ replaceTranslationKeys();
 
 // Agregar evento para asegurar que las traducciones se apliquen al cargar la página
 if (typeof window !== 'undefined') {
+  // Verificar si hay un parámetro de idioma en la URL y usarlo
   window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get('lang');
+      
+      if (langParam && (langParam === 'es' || langParam === 'en') && 
+          langParam !== i18n.global.locale.value) {
+        i18n.global.locale.value = langParam;
+        localStorage.setItem('language', langParam);
+        debugLog('Idioma actualizado desde URL parameter:', langParam);
+      }
+    } catch (e) {
+      // Ignorar errores con los parámetros de URL
+    }
+    
     debugLog('DOMContentLoaded: Aplicando traducciones iniciales');
     
     // Aplicar con un pequeño retraso para asegurar que todos los componentes estén montados
@@ -396,6 +413,7 @@ if (typeof window !== 'undefined') {
     setTimeout(() => {
       triggerLanguageChanged();
       refreshTranslations('body *');
+      doReplace(); // Asegurarnos de que las traducciones se apliquen al final
     }, 500);
   });
 }

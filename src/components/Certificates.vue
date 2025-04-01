@@ -78,25 +78,27 @@ const certificates = ref([
 ]);
 
 // Agregar watcher para forzar actualización cuando cambie el idioma
-watch(locale, () => {
+watch(locale, async (newLocale) => {
   // Forzar actualización de traducciones
-  nextTick(() => {
-    if (typeof document !== 'undefined') {
-      // Disparar evento personalizado para actualizar este componente
-      document.dispatchEvent(new CustomEvent('certificatesLocaleUpdated'));
-      
-      // Manera segura de forzar reactividad - creamos una copia inicial del array
-      const certsCopy = [...certificates.value];
-      certificates.value = certsCopy;
-    }
-  });
+  await nextTick();
+  
+  if (typeof document !== 'undefined') {
+    // Disparar evento personalizado para actualizar este componente
+    document.dispatchEvent(new CustomEvent('certificatesLocaleUpdated'));
+    
+    // Manera segura de forzar reactividad - crear una copia nueva
+    const certsCopy = [...certificates.value];
+    certificates.value = certsCopy;
+    
+    // Intentar actualizar visualmente
+    updateCertificatesText();
+  }
 }, { immediate: true });
 
-// Escuchar eventos de actualización de idioma
-if (typeof window !== 'undefined') {
-  window.addEventListener('languageChanged', () => {
-    // Forzar reactividad utilizando una copia reactiva
-    setTimeout(() => {
+// Función para actualizar textos visualmente
+const updateCertificatesText = () => {
+  setTimeout(() => {
+    try {
       const elements = document.querySelectorAll('#certificaciones .text-primary, #certificaciones .text-gray-400');
       elements.forEach(el => {
         if (el) {
@@ -106,7 +108,25 @@ if (typeof window !== 'undefined') {
           }, 50);
         }
       });
-    }, 100);
+    } catch (error) {
+      console.warn('Error al actualizar textos de certificados:', error);
+    }
+  }, 100);
+};
+
+// Escuchar eventos de actualización de idioma
+if (typeof window !== 'undefined') {
+  window.addEventListener('languageChanged', () => {
+    try {
+      // Forzar reactividad con una nueva copia
+      const certsCopy = [...certificates.value];
+      certificates.value = certsCopy;
+      
+      // Actualizar textos visualmente
+      updateCertificatesText();
+    } catch (error) {
+      console.warn('Error actualizando certificados:', error);
+    }
   });
 }
 </script>

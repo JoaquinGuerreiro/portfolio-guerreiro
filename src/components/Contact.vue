@@ -6,48 +6,68 @@ import emailjs from '@emailjs/browser';
 const { t, locale } = useI18n();
 
 // Agregar watcher para forzar actualización cuando cambie el idioma
-watch(locale, () => {
+watch(locale, async (newLocale) => {
   // Forzar actualización de traducciones
-  nextTick(() => {
-    if (typeof document !== 'undefined') {
-      try {
-        // Disparar evento personalizado para actualizar este componente
-        document.dispatchEvent(new CustomEvent('localeUpdated'));
-        
-        // Actualizar textos de la interfaz
-        const elements = document.querySelectorAll('#contacto label, #contacto button, #contacto h3, #contacto h4, #contacto p, #contacto a');
-        if (elements && elements.length) {
-          elements.forEach(el => {
-            if (el) {
-              el.style.opacity = '0.99';
-              setTimeout(() => { 
-                if (el) el.style.opacity = '1'; 
-              }, 50);
-            }
-          });
-        }
-      } catch (error) {
-        console.warn('Error actualizando Contact:', error);
+  await nextTick();
+  
+  if (typeof document !== 'undefined') {
+    try {
+      // Disparar evento personalizado para actualizar este componente
+      document.dispatchEvent(new CustomEvent('localeUpdated'));
+      
+      // Actualizar textos de la interfaz
+      const elements = document.querySelectorAll('#contacto label, #contacto button, #contacto h3, #contacto h4, #contacto p, #contacto a');
+      if (elements && elements.length) {
+        elements.forEach(el => {
+          if (el) {
+            el.style.opacity = '0.99';
+            setTimeout(() => { 
+              if (el) el.style.opacity = '1'; 
+            }, 50);
+          }
+        });
       }
+      
+      // Actualizar los enlaces del CV
+      updateCvLinks(newLocale);
+    } catch (error) {
+      console.warn('Error actualizando Contact:', error);
     }
-  });
+  }
 }, { immediate: true });
+
+// Función para actualizar los enlaces del CV
+const updateCvLinks = (locale) => {
+  try {
+    const cvPath = getCvPath();
+    const cvLinks = document.querySelectorAll('a[href*="/cv/"]');
+    if (cvLinks && cvLinks.length) {
+      cvLinks.forEach(link => {
+        link.setAttribute('href', cvPath);
+      });
+    }
+  } catch (error) {
+    console.warn('Error actualizando enlaces de CV:', error);
+  }
+};
 
 // Escuchar eventos de actualización de idioma
 if (typeof window !== 'undefined') {
   window.addEventListener('languageChanged', () => {
-    try {
-      // Forzar actualización de CV path
-      const cvPath = getCvPath();
-      const cvLinks = document.querySelectorAll('a[href*="/cv/"]');
-      if (cvLinks && cvLinks.length) {
-        cvLinks.forEach(link => {
-          link.setAttribute('href', cvPath);
-        });
-      }
-    } catch (error) {
-      console.warn('Error actualizando enlaces de CV:', error);
-    }
+    updateCvLinks(locale.value);
+    
+    // Intentar forzar también la actualización de todos los textos
+    setTimeout(() => {
+      const elements = document.querySelectorAll('#contacto *');
+      elements.forEach(el => {
+        if (el && el.textContent) {
+          el.style.opacity = '0.99';
+          setTimeout(() => {
+            if (el) el.style.opacity = '1';
+          }, 30);
+        }
+      });
+    }, 50);
   });
 }
 

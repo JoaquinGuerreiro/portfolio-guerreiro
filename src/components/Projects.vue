@@ -9,18 +9,42 @@ const { t, locale } = useI18n();
 const projects = ref(projectsData);
 
 // Agregar watcher para forzar actualización cuando cambie el idioma
-watch(locale, () => {
+watch(locale, async (newLocale) => {
   // Forzar actualización de traducciones
-  nextTick(() => {
-    if (typeof document !== 'undefined') {
-      // Disparar evento personalizado para actualizar este componente
-      document.dispatchEvent(new CustomEvent('projectsLocaleUpdated'));
-      
-      // Manera segura de forzar reactividad
-      projects.value = [...projectsData];
-    }
-  });
+  await nextTick();
+  
+  if (typeof document !== 'undefined') {
+    // Disparar evento personalizado para actualizar este componente
+    document.dispatchEvent(new CustomEvent('projectsLocaleUpdated'));
+    
+    // Manera segura de forzar reactividad - usar una nueva copia
+    projects.value = [...projectsData];
+    
+    // Intentar actualizar visualmente los elementos
+    updateProjectsText();
+  }
 }, { immediate: true });
+
+// Función para actualizar elementos visuales
+const updateProjectsText = () => {
+  setTimeout(() => {
+    try {
+      const elements = document.querySelectorAll('#proyectos .text-primary, #proyectos .text-gray-300, #proyectos a');
+      if (elements && elements.length) {
+        elements.forEach(el => {
+          if (el) {
+            el.style.opacity = '0.99';
+            setTimeout(() => { 
+              if (el) el.style.opacity = '1'; 
+            }, 50);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Error al actualizar textos de proyectos:', error);
+    }
+  }, 100);
+};
 
 // Escuchar eventos de actualización de idioma
 if (typeof window !== 'undefined') {
@@ -29,20 +53,8 @@ if (typeof window !== 'undefined') {
       // Forzar reactividad actualizando la referencia a projects
       projects.value = [...projectsData];
       
-      // También actualizar visualmente elementos que podrían necesitarlo
-      setTimeout(() => {
-        const elements = document.querySelectorAll('#proyectos .text-primary, #proyectos .text-gray-300, #proyectos a');
-        if (elements && elements.length) {
-          elements.forEach(el => {
-            if (el) {
-              el.style.opacity = '0.99';
-              setTimeout(() => { 
-                if (el) el.style.opacity = '1'; 
-              }, 50);
-            }
-          });
-        }
-      }, 100);
+      // Actualizar visualmente
+      updateProjectsText();
     } catch (error) {
       console.warn('Error actualizando proyectos:', error);
     }
