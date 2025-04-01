@@ -155,14 +155,26 @@ const i18n = createI18n({
   globalInjection: true,
   warnHtmlMessage: false,
   silentTranslationWarn: true,
-  sync: true
-})
+  sync: true,
+  missingWarn: false,
+  fallbackWarn: false
+});
 
-console.log('i18n configurado, locale actual:', i18n.global.locale.value);
+const app = createApp(App);
+app.use(i18n);
 
-const app = createApp(App)
-app.use(i18n)
-app.mount('#app')
+// Sistema de reactividad simplificado
+window.addEventListener('languageChanged', () => {
+  const appElement = document.querySelector('#app');
+  if (appElement && appElement.__vue_app__) {
+    const vm = appElement.__vue_app__._instance;
+    if (vm && vm.proxy && typeof vm.proxy.$forceUpdate === 'function') {
+      vm.proxy.$forceUpdate();
+    }
+  }
+});
+
+app.mount('#app');
 
 // SOLUCIÓN PARA REEMPLAZAR CLAVES DE TRADUCCIÓN EN MODO PRODUCCIÓN
 function replaceTranslationKeys() {
@@ -208,35 +220,38 @@ function replaceTranslationKeys() {
   
   // Función para reemplazar las claves
   function doReplace() {
-    const currentLocale = i18n.global.locale.value;
-    
-    // Función auxiliar para reemplazar texto en nodos
-    function processNode(node) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.nodeValue;
-        Object.keys(translationKeys).forEach(key => {
-          if (text.includes(key)) {
-            node.nodeValue = text.replace(key, translationKeys[key][currentLocale]);
+    try {
+      const currentLocale = i18n.global.locale.value;
+      
+      // Función auxiliar para reemplazar texto en nodos
+      function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.nodeValue;
+          Object.keys(translationKeys).forEach(key => {
+            if (text.includes(key)) {
+              node.nodeValue = text.replace(key, translationKeys[key][currentLocale]);
+            }
+          });
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+            node.childNodes.forEach(child => processNode(child));
           }
-        });
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
-          node.childNodes.forEach(child => processNode(child));
         }
       }
+      
+      // Procesar todo el cuerpo del documento
+      processNode(document.body);
+      console.log('Traducciones actualizadas para:', currentLocale);
+    } catch (error) {
+      console.warn('Error al actualizar traducciones:', error);
     }
-    
-    // Procesar todo el cuerpo del documento
-    processNode(document.body);
-    console.log('Traducciones actualizadas para:', currentLocale);
   }
 
-  // Escuchar el evento personalizado de cambio de idioma
-  document.addEventListener('languageChanged', (event) => {
+  // Escuchar eventos
+  document.addEventListener('languageChanged', () => {
     setTimeout(doReplace, 0);
   });
 
-  // Ejecutar al cargar la página
   window.addEventListener('DOMContentLoaded', doReplace);
   window.addEventListener('load', doReplace);
 
@@ -245,15 +260,14 @@ function replaceTranslationKeys() {
   const interval = setInterval(() => {
     doReplace();
     count++;
-    if (count >= 15) clearInterval(interval); // Aumentar a 15 intentos
-  }, 200); // Reducir el intervalo a 200ms
+    if (count >= 10) clearInterval(interval);
+  }, 500);
 
-  // También observar cambios en el DOM
+  // Observar cambios en el DOM
   const observer = new MutationObserver(() => {
     doReplace();
   });
 
-  // Comenzar a observar el DOM cuando esté listo
   window.addEventListener('load', () => {
     observer.observe(document.body, {
       childList: true,

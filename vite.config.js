@@ -8,7 +8,15 @@ export default defineConfig({
     // Configuración específica para el build
     ssrManifest: false,
     minify: true,
-    target: 'esnext'
+    target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['vue-i18n']
   },
   // Configuración para SSR
   ssr: {

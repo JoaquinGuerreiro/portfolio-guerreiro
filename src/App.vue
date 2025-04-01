@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import Projects from './components/Projects.vue';
 import Contact from './components/Contact.vue';
 import Certificates from './components/Certificates.vue';
@@ -8,20 +8,8 @@ import { useI18n } from 'vue-i18n';
 const { locale, t } = useI18n();
 const currentLanguage = computed(() => locale.value);
 
-const toggleLanguage = () => {
-  const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
-  locale.value = newLang;
-  localStorage.setItem('language', newLang);
-  
-  // Usar setTimeout en lugar de nextTick para asegurar que el DOM se actualice
-  setTimeout(() => {
-    document.dispatchEvent(new CustomEvent('languageChanged', { 
-      detail: { locale: newLang } 
-    }));
-  }, 0);
-};
-
-const habilidades = computed(() => [
+// Definir habilidades como ref
+const habilidades = ref([
   { nombre: 'HTML', icono: 'devicon-html5-plain' },
   { nombre: 'CSS', icono: 'devicon-css3-plain' },
   { nombre: 'JavaScript', icono: 'devicon-javascript-plain' },
@@ -39,6 +27,25 @@ const habilidades = computed(() => [
   { nombre: t('skills.graphicDesign'), icono: 'fas fa-palette' },
   { nombre: t('skills.uxui'), icono: 'fas fa-pencil-ruler' }
 ]);
+
+const toggleLanguage = async () => {
+  const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
+  locale.value = newLang;
+  localStorage.setItem('language', newLang);
+  
+  // Actualizar las habilidades que necesitan traducción
+  habilidades.value = habilidades.value.map(hab => ({
+    ...hab,
+    nombre: hab.icono.includes('fa-') ? t(
+      hab.icono.includes('file-word') ? 'skills.officePackage' :
+      hab.icono.includes('palette') ? 'skills.graphicDesign' :
+      'skills.uxui'
+    ) : hab.nombre
+  }));
+  
+  await nextTick();
+  window.dispatchEvent(new Event('languageChanged'));
+};
 
 const activeSection = ref('');
 const menuOpen = ref(false);
