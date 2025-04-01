@@ -35,7 +35,7 @@ const messages = {
         title: 'Certificaciones',
         issuer: 'Emisor',
         date: 'Fecha',
-        inProgress: 'En curso'
+        inProgress: 'Título en Trámite'
       },
       contact: {
         title: 'Contacto',
@@ -97,7 +97,7 @@ const messages = {
         title: 'Certifications',
         issuer: 'Issuer',
         date: 'Date',
-        inProgress: 'In Progress'
+        inProgress: 'Title in Process'
       },
       contact: {
         title: 'Contact',
@@ -208,89 +208,59 @@ function replaceTranslationKeys() {
   
   // Función para reemplazar las claves
   function doReplace() {
-    setTimeout(() => {
-      const currentLocale = i18n.global.locale.value;
-      
-      // Función auxiliar para reemplazar texto en nodos
-      function processNode(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.nodeValue;
-          // Buscar cualquier texto que coincida con el patrón de clave de traducción
-          const matches = text.match(/([\w.]+@[\w.]+)/g);
-          if (matches) {
-            matches.forEach(match => {
-              const key = match.split('@')[0];
-              if (translationKeys[key] && translationKeys[key][currentLocale]) {
-                node.nodeValue = text.replace(match, translationKeys[key][currentLocale]);
-              }
-            });
+    const currentLocale = i18n.global.locale.value;
+    
+    // Función auxiliar para reemplazar texto en nodos
+    function processNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.nodeValue;
+        Object.keys(translationKeys).forEach(key => {
+          if (text.includes(key)) {
+            node.nodeValue = text.replace(key, translationKeys[key][currentLocale]);
           }
-          // También buscar claves de traducción directas
-          const trimmedText = text.trim();
-          if (translationKeys[trimmedText] && translationKeys[trimmedText][currentLocale]) {
-            node.nodeValue = text.replace(
-              trimmedText, 
-              translationKeys[trimmedText][currentLocale]
-            );
-          }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          // No procesar scripts ni estilos
-          if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
-            // Procesar atributos que puedan contener traducciones
-            Array.from(node.attributes).forEach(attr => {
-              if (attr.value && typeof attr.value === 'string') {
-                const matches = attr.value.match(/([\w.]+@[\w.]+)/g);
-                if (matches) {
-                  matches.forEach(match => {
-                    const key = match.split('@')[0];
-                    if (translationKeys[key] && translationKeys[key][currentLocale]) {
-                      attr.value = attr.value.replace(match, translationKeys[key][currentLocale]);
-                    }
-                  });
-                }
-              }
-            });
-            node.childNodes.forEach(child => processNode(child));
-          }
+        });
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+          node.childNodes.forEach(child => processNode(child));
         }
       }
-      
-      // Procesar todo el cuerpo del documento
-      processNode(document.body);
-      
-      console.log('Reemplazo de claves de traducción completado para el idioma:', currentLocale);
-    }, 100); // Pequeño retraso para asegurar que el DOM esté listo
-  }
-  
-  // Ejecutar al cargar y cuando cambie el idioma
-  window.addEventListener('DOMContentLoaded', doReplace);
-  document.addEventListener('DOMContentLoaded', doReplace);
-  
-  // También ejecutar después de que la página esté completamente cargada
-  window.addEventListener('load', doReplace);
-  
-  // Observar cambios en el idioma usando intervalo
-  if (typeof window !== 'undefined') {
-    // Crear una variable para seguir el idioma actual
-    let currentLocaleValue = i18n.global.locale.value;
+    }
     
-    // Verificar periódicamente si ha cambiado el idioma
-    setInterval(() => {
-      if (currentLocaleValue !== i18n.global.locale.value) {
-        currentLocaleValue = i18n.global.locale.value;
-        doReplace();
-        console.log('Idioma cambiado a:', currentLocaleValue);
-      }
-    }, 500);
+    // Procesar todo el cuerpo del documento
+    processNode(document.body);
+    console.log('Traducciones actualizadas para:', currentLocale);
   }
-  
-  // Ejecutar cada segundo durante los primeros 5 segundos para asegurar que se aplique
+
+  // Escuchar el evento personalizado de cambio de idioma
+  document.addEventListener('languageChanged', (event) => {
+    setTimeout(doReplace, 0);
+  });
+
+  // Ejecutar al cargar la página
+  window.addEventListener('DOMContentLoaded', doReplace);
+  window.addEventListener('load', doReplace);
+
+  // Ejecutar periódicamente durante los primeros segundos
   let count = 0;
   const interval = setInterval(() => {
     doReplace();
     count++;
-    if (count >= 10) clearInterval(interval); // Aumentar a 10 intentos
-  }, 500); // Reducir el intervalo a 500ms
+    if (count >= 15) clearInterval(interval); // Aumentar a 15 intentos
+  }, 200); // Reducir el intervalo a 200ms
+
+  // También observar cambios en el DOM
+  const observer = new MutationObserver(() => {
+    doReplace();
+  });
+
+  // Comenzar a observar el DOM cuando esté listo
+  window.addEventListener('load', () => {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  });
 }
 
 // Ejecutar la función de reemplazo

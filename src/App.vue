@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import Projects from './components/Projects.vue';
 import Contact from './components/Contact.vue';
 import Certificates from './components/Certificates.vue';
@@ -12,6 +12,13 @@ const toggleLanguage = () => {
   const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
   locale.value = newLang;
   localStorage.setItem('language', newLang);
+  
+  // Usar setTimeout en lugar de nextTick para asegurar que el DOM se actualice
+  setTimeout(() => {
+    document.dispatchEvent(new CustomEvent('languageChanged', { 
+      detail: { locale: newLang } 
+    }));
+  }, 0);
 };
 
 const habilidades = computed(() => [
