@@ -127,9 +127,10 @@ const closeMenu = () => {
                 class="py-2 px-1 text-lg font-medium relative group transition-all"
                 :class="activeSection === section ? 'text-primary brightness-125' : 'text-gray-300 hover:text-white'"
               >
-                {{ $t(`nav.${section === 'habilidades' ? 'skills' : 
-                            section === 'proyectos' ? 'projects' : 
-                            section === 'certificaciones' ? 'certifications' : 'contact'}`) }}
+                {{ section === 'habilidades' ? (locale === 'es' ? 'Habilidades' : 'Skills') : 
+                   section === 'proyectos' ? (locale === 'es' ? 'Proyectos' : 'Projects') : 
+                   section === 'certificaciones' ? (locale === 'es' ? 'Certificaciones' : 'Certifications') : 
+                   (locale === 'es' ? 'Contacto' : 'Contact') }}
                 <!-- Subrayado animado -->
                 <span 
                   class="block w-full h-0.5 absolute bottom-0 left-0 bg-primary origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" 
