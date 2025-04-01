@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 
 const { t, locale } = useI18n();
 
@@ -77,58 +77,64 @@ const certificates = ref([
   },
 ]);
 
-// Agregar watcher para forzar actualización cuando cambie el idioma
-watch(locale, async (newLocale) => {
-  // Forzar actualización de traducciones
-  await nextTick();
-  
-  if (typeof document !== 'undefined') {
-    // Disparar evento personalizado para actualizar este componente
-    document.dispatchEvent(new CustomEvent('certificatesLocaleUpdated'));
-    
-    // Manera segura de forzar reactividad - crear una copia nueva
-    const certsCopy = [...certificates.value];
-    certificates.value = certsCopy;
-    
-    // Intentar actualizar visualmente
-    updateCertificatesText();
-  }
-}, { immediate: true });
-
 // Función para actualizar textos visualmente
 const updateCertificatesText = () => {
   setTimeout(() => {
     try {
       const elements = document.querySelectorAll('#certificaciones .text-primary, #certificaciones .text-gray-400');
-      elements.forEach(el => {
-        if (el) {
-          el.style.opacity = '0.99';
-          setTimeout(() => { 
-            if (el) el.style.opacity = '1'; 
-          }, 50);
-        }
-      });
+      if (elements && elements.length) {
+        elements.forEach(el => {
+          if (el) {
+            el.style.opacity = '0.99';
+            setTimeout(() => { 
+              if (el) el.style.opacity = '1'; 
+            }, 50);
+          }
+        });
+      }
     } catch (error) {
       console.warn('Error al actualizar textos de certificados:', error);
     }
   }, 100);
 };
 
+// Método para forzar actualización de certificados
+const forceCertificatesUpdate = () => {
+  try {
+    // Forzar reactividad con una nueva copia
+    const certsCopy = [...certificates.value];
+    certificates.value = certsCopy;
+    
+    // Actualizar textos visualmente
+    updateCertificatesText();
+  } catch (error) {
+    console.warn('Error actualizando certificados:', error);
+  }
+};
+
+// Agregar watcher para forzar actualización cuando cambie el idioma
+watch(locale, async () => {
+  // Forzar actualización de traducciones
+  await nextTick();
+  forceCertificatesUpdate();
+}, { immediate: true });
+
 // Escuchar eventos de actualización de idioma
-if (typeof window !== 'undefined') {
-  window.addEventListener('languageChanged', () => {
-    try {
-      // Forzar reactividad con una nueva copia
-      const certsCopy = [...certificates.value];
-      certificates.value = certsCopy;
-      
-      // Actualizar textos visualmente
-      updateCertificatesText();
-    } catch (error) {
-      console.warn('Error actualizando certificados:', error);
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    // Evento global
+    window.addEventListener('languageChanged', forceCertificatesUpdate);
+    
+    // Evento específico del componente
+    document.addEventListener('certificatesLocaleUpdated', forceCertificatesUpdate);
+    
+    // Exponer método al objeto window para acceso directo
+    if (!window.forceUpdateComponents) {
+      window.forceUpdateComponents = {};
     }
-  });
-}
+    window.forceUpdateComponents.certificates = forceCertificatesUpdate;
+  }
+});
 </script>
 
 <template>
@@ -155,7 +161,7 @@ if (typeof window !== 'undefined') {
             disabled
           >
             <i class="fas fa-file-alt"></i>
-            {{ $t('sections.certifications.inProgress') }}
+            {{ locale === 'es' ? 'Título en Trámite' : 'Title in Process' }}
           </button>
           <a
             v-else-if="cert.pdfUrl"
@@ -164,7 +170,7 @@ if (typeof window !== 'undefined') {
             class="px-4 py-2 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
           >
             <i class="fas fa-file-pdf"></i>
-            {{ $t('sections.projects.certificate') }}
+            {{ locale === 'es' ? 'Certificado' : 'Certificate' }}
           </a>
         </div>
       </div>

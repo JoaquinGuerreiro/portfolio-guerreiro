@@ -1,43 +1,12 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emailjs from '@emailjs/browser';
 
 const { t, locale } = useI18n();
 
-// Agregar watcher para forzar actualización cuando cambie el idioma
-watch(locale, async (newLocale) => {
-  // Forzar actualización de traducciones
-  await nextTick();
-  
-  if (typeof document !== 'undefined') {
-    try {
-      // Disparar evento personalizado para actualizar este componente
-      document.dispatchEvent(new CustomEvent('localeUpdated'));
-      
-      // Actualizar textos de la interfaz
-      const elements = document.querySelectorAll('#contacto label, #contacto button, #contacto h3, #contacto h4, #contacto p, #contacto a');
-      if (elements && elements.length) {
-        elements.forEach(el => {
-          if (el) {
-            el.style.opacity = '0.99';
-            setTimeout(() => { 
-              if (el) el.style.opacity = '1'; 
-            }, 50);
-          }
-        });
-      }
-      
-      // Actualizar los enlaces del CV
-      updateCvLinks(newLocale);
-    } catch (error) {
-      console.warn('Error actualizando Contact:', error);
-    }
-  }
-}, { immediate: true });
-
 // Función para actualizar los enlaces del CV
-const updateCvLinks = (locale) => {
+const updateCvLinks = () => {
   try {
     const cvPath = getCvPath();
     const cvLinks = document.querySelectorAll('a[href*="/cv/"]');
@@ -51,25 +20,63 @@ const updateCvLinks = (locale) => {
   }
 };
 
-// Escuchar eventos de actualización de idioma
-if (typeof window !== 'undefined') {
-  window.addEventListener('languageChanged', () => {
-    updateCvLinks(locale.value);
+// Función para actualizar visualmente los elementos
+const updateContactElements = () => {
+  setTimeout(() => {
+    try {
+      const elements = document.querySelectorAll('#contacto label, #contacto button, #contacto h3, #contacto h4, #contacto p, #contacto a');
+      if (elements && elements.length) {
+        elements.forEach(el => {
+          if (el) {
+            el.style.opacity = '0.99';
+            setTimeout(() => { 
+              if (el) el.style.opacity = '1'; 
+            }, 50);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Error actualizando elementos de contacto:', error);
+    }
+  }, 100);
+};
+
+// Método para forzar actualización del componente
+const forceContactUpdate = () => {
+  try {
+    // Actualizar los enlaces del CV
+    updateCvLinks();
     
-    // Intentar forzar también la actualización de todos los textos
-    setTimeout(() => {
-      const elements = document.querySelectorAll('#contacto *');
-      elements.forEach(el => {
-        if (el && el.textContent) {
-          el.style.opacity = '0.99';
-          setTimeout(() => {
-            if (el) el.style.opacity = '1';
-          }, 30);
-        }
-      });
-    }, 50);
-  });
-}
+    // Actualizar visualmente los elementos
+    updateContactElements();
+  } catch (error) {
+    console.warn('Error actualizando componente Contact:', error);
+  }
+};
+
+// Agregar watcher para forzar actualización cuando cambie el idioma
+watch(locale, async () => {
+  // Forzar actualización de traducciones
+  await nextTick();
+  forceContactUpdate();
+}, { immediate: true });
+
+// Escuchar eventos de actualización de idioma
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    // Eventos globales
+    window.addEventListener('languageChanged', forceContactUpdate);
+    
+    // Evento específico de componente
+    document.addEventListener('localeUpdated', forceContactUpdate);
+    
+    // Exponer método al objeto window para acceso directo
+    if (!window.forceUpdateComponents) {
+      window.forceUpdateComponents = {};
+    }
+    window.forceUpdateComponents.contact = forceContactUpdate;
+  }
+});
 
 // Configuración de EmailJS
 const SERVICE_ID = 'service_4ks4viw';
@@ -120,11 +127,11 @@ const submitForm = async () => {
       formData.value = { name: '', email: '', subject: '', message: '' };
     } else {
       hasError.value = true;
-      errorMessage.value = t('sections.contact.form.error');
+      errorMessage.value = locale.value === 'es' ? 'Hubo un error al enviar el mensaje' : 'There was an error sending the message';
     }
   } catch (error) {
     hasError.value = true;
-    errorMessage.value = t('sections.contact.form.error');
+    errorMessage.value = locale.value === 'es' ? 'Hubo un error al enviar el mensaje' : 'There was an error sending the message';
     console.error('Error sending form:', error);
   } finally {
     isSubmitting.value = false;
@@ -141,8 +148,8 @@ emailjs.init(PUBLIC_KEY);
       <!-- Info de contacto -->
       <div class="md:col-span-2 space-y-6">
         <div>
-          <h3 class="text-xl font-bold text-white mb-2">{{ $t('sections.contact.info') }}</h3>
-          <p class="text-gray-400">{{ $t('sections.contact.form.fillOrContact') }}</p>
+          <h3 class="text-xl font-bold text-white mb-2">{{ locale === 'es' ? 'Información de contacto' : 'Contact Information' }}</h3>
+          <p class="text-gray-400">{{ locale === 'es' ? 'Completá el formulario o contactame directamente a través de:' : 'Fill out the form or contact me directly through:' }}</p>
         </div>
         
         <!-- Email con enlace mailto -->
@@ -151,7 +158,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.email') }}</h4>
+            <h4 class="text-sm font-medium text-white">{{ locale === 'es' ? 'Correo electrónico' : 'Email' }}</h4>
             <p class="text-gray-400">joaquinguerreiro12@gmail.com</p>
           </div>
         </a>
@@ -162,7 +169,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a2 2 0 011.94 1.5l.72 2.88a2 2 0 01-.45 1.95l-2.1 2.1a16.001 16.001 0 006.36 6.36l2.1-2.1a2 2 0 011.95-.45l2.88.72a2 2 0 011.5 1.94V19a2 2 0 01-2 2h-1a19.002 19.002 0 01-18-18V5z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.phone') }}</h4>
+            <h4 class="text-sm font-medium text-white">{{ locale === 'es' ? 'Teléfono' : 'Phone' }}</h4>
             <p class="text-gray-400">+54 9 11 5977-0182</p>
           </div>
         </a>
@@ -173,7 +180,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11.37a4 4 0 11-8 0 4 4 0 018 0zM17.5 6.5h.01" />
           </svg>
             <div>
-              <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.instagram') }}</h4>
+              <h4 class="text-sm font-medium text-white">{{ locale === 'es' ? 'Instagram' : 'Instagram' }}</h4>
               <p class="text-gray-400">@joakoguerreiro</p>
             </div>
         </a>
@@ -184,7 +191,7 @@ emailjs.init(PUBLIC_KEY);
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           <div>
-            <h4 class="text-sm font-medium text-white">{{ $t('sections.contact.location') }}</h4>
+            <h4 class="text-sm font-medium text-white">{{ locale === 'es' ? 'Ubicación' : 'Location' }}</h4>
             <p class="text-gray-400">Ciudad Autónoma de Buenos Aires, Argentina</p>
           </div>
         </div>
@@ -196,7 +203,7 @@ emailjs.init(PUBLIC_KEY);
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 group-hover:animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {{ $t('sections.contact.downloadCV') }}
+            {{ locale === 'es' ? 'Descargar CV' : 'Resume' }}
           </a>
         </div>
         
@@ -222,7 +229,7 @@ emailjs.init(PUBLIC_KEY);
       <div class="md:col-span-3">
         <form v-if="!isSubmitted" @submit.prevent="submitForm" class="space-y-6">
           <div>
-            <label for="name" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.name') }}</label>
+            <label for="name" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ locale === 'es' ? 'Nombre' : 'Name' }}</label>
             <input 
               type="text" 
               id="name" 
@@ -232,7 +239,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="email" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.email') }}</label>
+            <label for="email" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ locale === 'es' ? 'Email' : 'Email' }}</label>
             <input 
               type="email" 
               id="email" 
@@ -242,7 +249,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="subject" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.subject') }}</label>
+            <label for="subject" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ locale === 'es' ? 'Asunto' : 'Subject' }}</label>
             <input 
               type="text" 
               id="subject" 
@@ -252,7 +259,7 @@ emailjs.init(PUBLIC_KEY);
             >
           </div>
           <div>
-            <label for="message" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ $t('sections.contact.form.message') }}</label>
+            <label for="message" class="block mb-2 text-left text-sm font-medium text-gray-300">{{ locale === 'es' ? 'Mensaje' : 'Message' }}</label>
             <textarea 
               id="message" 
               v-model="formData.message" 
@@ -272,13 +279,13 @@ emailjs.init(PUBLIC_KEY);
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ $t('sections.contact.form.sending') }}
+                {{ locale === 'es' ? 'Enviando...' : 'Sending...' }}
               </span>
-              <span v-else>{{ $t('sections.contact.form.send') }}</span>
+              <span v-else>{{ locale === 'es' ? 'Enviar mensaje' : 'Send message' }}</span>
             </button>
           </div>
           <div v-if="hasError" class="text-red-400 mt-4 p-3 bg-red-400/10 rounded-lg">
-            {{ errorMessage || 'Ha ocurrido un error, por favor intenta nuevamente.' }}
+            {{ locale === 'es' ? 'Hubo un error al enviar el mensaje' : 'There was an error sending the message' }}
           </div>
         </form>
 
@@ -288,13 +295,13 @@ emailjs.init(PUBLIC_KEY);
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2">{{ $t('sections.contact.form.success') }}</h3>
-          <p class="text-gray-300 mb-6">{{ $t('sections.contact.form.thanks') }}</p>
+          <h3 class="text-xl font-bold mb-2">{{ locale === 'es' ? '¡Mensaje enviado con éxito!' : 'Message sent successfully!' }}</h3>
+          <p class="text-gray-300 mb-6">{{ locale === 'es' ? 'Gracias por contactarme. Te responderé a la brevedad.' : 'Thank you for contacting me. I will reply shortly.' }}</p>
           <button 
             @click="isSubmitted = false" 
             class="py-2 px-4 bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors"
           >
-            {{ $t('sections.contact.form.tryAgain') }}
+            {{ locale === 'es' ? 'Enviar otro mensaje' : 'Send another message' }}
           </button>
         </div>
       </div>

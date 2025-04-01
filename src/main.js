@@ -174,28 +174,26 @@ const i18n = createI18n({
   fullInstall: true
 });
 
-// Crear un método global para forzar la actualización de traducciones
-function forceI18nRefresh() {
-  // Usar la utilidad para disparar el evento de cambio de idioma
-  triggerLanguageChanged();
-  
-  // También actualizar directamente el DOM
-  const appElement = document.querySelector('#app');
-  if (appElement && appElement.__vue_app__) {
-    const vm = appElement.__vue_app__._instance;
-    if (vm && vm.proxy && typeof vm.proxy.$forceUpdate === 'function') {
-      vm.proxy.$forceUpdate();
-    }
-  }
-  
-  // Refrescar todas las traducciones visibles
-  refreshTranslations('body *[data-i18n], h1, h2, h3, p, a, button, label, span');
-}
+// Inicializar componentes globales para actualizaciones
+window.forceUpdateComponents = window.forceUpdateComponents || {};
 
-// Agregar al objeto window para poder acceder desde cualquier lugar
-if (typeof window !== 'undefined') {
-  window.forceI18nRefresh = forceI18nRefresh;
-}
+// Método global para forzar actualización de traducciones
+window.forceI18nRefresh = () => {
+  try {
+    // Refrescar traducciones en el DOM
+    refreshTranslations('#app');
+    
+    // Notificar a los componentes
+    triggerLanguageChanged();
+    
+    // Si el código no está en modo debug, no mostrar mensaje
+    if (DEBUG_MODE) {
+      debugLog('Traducciones refrescadas manualmente');
+    }
+  } catch (error) {
+    console.warn('Error refrescando traducciones:', error);
+  }
+};
 
 const app = createApp(App);
 app.use(i18n);
@@ -288,7 +286,7 @@ function replaceTranslationKeys() {
     'sections.projects.demo': { es: 'Sitio', en: 'Site' },
     'sections.projects.pdf': { es: 'PDF', en: 'PDF' },
     'sections.projects.gif': { es: 'GIF', en: 'GIF' },
-    'sections.certifications.inProgress': { es: 'En curso', en: 'In Progress' },
+    'sections.certifications.inProgress': { es: 'Título en Trámite', en: 'Title in Process' },
     'sections.projects.certificate': { es: 'Certificado', en: 'Certificate' },
     'skills.graphicDesign': { es: 'Diseño Gráfico', en: 'Graphic Design' },
     'skills.uxui': { es: 'Diseño UX/UI', en: 'UX/UI Design' },

@@ -24,87 +24,86 @@ const habilidades = ref([
   { nombre: 'WordPress', icono: 'devicon-wordpress-plain' },
   { nombre: 'Adobe Photoshop', icono: 'devicon-photoshop-plain' },
   { nombre: 'Adobe Illustrator', icono: 'devicon-illustrator-plain' },
-  { nombre: t('skills.officePackage'), icono: 'fas fa-file-word' },
-  { nombre: t('skills.graphicDesign'), icono: 'fas fa-palette' },
-  { nombre: t('skills.uxui'), icono: 'fas fa-pencil-ruler' }
+  { 
+    nombre: locale.value === 'es' ? 'Paquete Office' : 'Office Package',
+    nombreObj: { es: 'Paquete Office', en: 'Office Package' },
+    icono: 'fas fa-file-word' 
+  },
+  { 
+    nombre: locale.value === 'es' ? 'Diseño Gráfico' : 'Graphic Design',
+    nombreObj: { es: 'Diseño Gráfico', en: 'Graphic Design' },
+    icono: 'fas fa-palette' 
+  },
+  { 
+    nombre: locale.value === 'es' ? 'UX/UI' : 'UX/UI',
+    nombreObj: { es: 'UX/UI', en: 'UX/UI' },
+    icono: 'fas fa-pencil-ruler' 
+  }
 ]);
 
 const toggleLanguage = async () => {
   try {
-    const newLang = currentLanguage.value === 'es' ? 'en' : 'es';
-    locale.value = newLang;
-    localStorage.setItem('language', newLang);
+    // Cambiar el idioma
+    locale.value = locale.value === 'es' ? 'en' : 'es';
     
-    // Actualizar las habilidades que necesitan traducción
-    habilidades.value = habilidades.value.map(hab => ({
-      ...hab,
-      nombre: hab.icono.includes('fa-') ? t(
-        hab.icono.includes('file-word') ? 'skills.officePackage' :
-        hab.icono.includes('palette') ? 'skills.graphicDesign' :
-        'skills.uxui'
-      ) : hab.nombre
+    // Guardar preferencia en localStorage
+    localStorage.setItem('locale', locale.value);
+    
+    // Actualizar habilidades traducidas 
+    habilidades.value = habilidades.value.map(skill => ({
+      ...skill,
+      nombre: typeof skill.nombreObj === 'object' ? skill.nombreObj[locale.value] : skill.nombre
     }));
     
-    await nextTick();
-    
+    // Notificar cambio de idioma a los componentes
     if (typeof window !== 'undefined') {
-      // Solución más agresiva: recargar la página para aplicar todas las traducciones correctamente
-      if (window.location.href.includes('vercel.app') || 
-          window.location.hostname !== 'localhost') {
-        // En un entorno de producción (Vercel), recargamos la página
-        // con un parámetro de consulta para evitar problemas de caché
-        window.location.href = window.location.pathname + 
-                              (window.location.search ? 
-                                window.location.search + '&lang=' + newLang : 
-                                '?lang=' + newLang) + 
-                              window.location.hash;
-        return;
+      if (window.forceUpdateComponents) {
+        // Si existen los métodos directos, usarlos para actualizar los componentes principales
+        const componentNames = Object.keys(window.forceUpdateComponents);
+        console.info(`Actualizando directamente ${componentNames.length} componentes registrados`);
+        
+        // Actualización inmediata
+        componentNames.forEach(name => {
+          try {
+            window.forceUpdateComponents[name]();
+          } catch (err) {
+            console.warn(`Error actualizando componente ${name}:`, err);
+          }
+        });
+        
+        // Actualización después de 100ms para reactividad profunda
+        setTimeout(() => {
+          componentNames.forEach(name => {
+            try {
+              window.forceUpdateComponents[name]();
+            } catch (err) {
+              console.warn(`Error actualizando componente ${name} (2º intento):`, err);
+            }
+          });
+        }, 100);
       }
       
-      // En desarrollo local, intentamos actualizar sin recargar
-      triggerLanguageChanged();
+      // Disparar eventos para componentes que no tienen acceso directo
+      window.dispatchEvent(new CustomEvent('languageChanged'));
       
-      // Usar las utilidades para la máxima actualización posible
+      // Programar múltiples eventos para asegurar que todos los componentes se actualicen
       setTimeout(() => {
-        // Forzar actualización de traducciones en todos los elementos
-        refreshTranslations('*');
-        
-        // Intentar ejecutar manualmente la función para reemplazar claves de traducción
-        if (typeof window.doReplace === 'function') {
-          window.doReplace();
-        }
-        
-        // Intentar llamar a la función refreshComponents
         try {
-          const components = [
-            document.querySelector('#proyectos'), 
-            document.querySelector('#certificaciones'),
-            document.querySelector('#contacto')
-          ];
+          window.dispatchEvent(new CustomEvent('languageChanged'));
           
-          if (components && components.length) {
-            components.forEach(component => {
-              if (component && component.__vueParentComponent) {
-                try {
-                  const vm = component.__vueParentComponent.ctx;
-                  if (vm && typeof vm.$forceUpdate === 'function') {
-                    vm.$forceUpdate();
-                  }
-                } catch (e) {
-                  console.warn('Error al actualizar componente:', e);
-                }
-              }
-            });
+          // Actualizar las traducciones basadas en atributos
+          if (window.refreshTranslations) {
+            window.refreshTranslations('#app');
+          }
+          
+          // Intentar disparar el evento específico si existe
+          if (window.triggerLanguageChanged) {
+            window.triggerLanguageChanged();
           }
         } catch (error) {
-          console.warn('Error en actualización de componentes:', error);
+          console.warn('Error en actualización secundaria:', error);
         }
-        
-        // Usar forceI18nRefresh si está disponible
-        if (typeof window.forceI18nRefresh === 'function') {
-          window.forceI18nRefresh();
-        }
-      }, 100);
+      }, 200);
     }
   } catch (error) {
     console.error('Error al cambiar idioma:', error);
@@ -266,13 +265,13 @@ const closeMenu = () => {
           </div>
         </div>
         <h1 class="text-5xl font-bold mb-4 text-white">Joaquín Guerreiro Apolonia</h1>
-        <p class="text-xl text-primary"><strong>{{ $t('header.role') }}</strong></p>
-    </header>
+        <p class="text-xl text-primary"><strong>{{ locale === 'es' ? 'Desarrollador y Programador Web' : 'Web Developer and Programmer' }}</strong></p>
+      </header>
     
       <!-- Sección de habilidades -->
       <section id="habilidades" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          {{ $t('sections.skills.title') }}
+          {{ locale === 'es' ? 'Habilidades y Tecnologías' : 'Skills & Technologies' }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -282,21 +281,21 @@ const closeMenu = () => {
             <span>{{ habilidad.nombre }}</span>
           </div>
         </div>
-    </section>
+      </section>
 
       <!-- Sección de proyectos -->
       <section id="proyectos" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          {{ $t('sections.projects.title') }}
+          {{ locale === 'es' ? 'Mis Proyectos' : 'My Projects' }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
-      <Projects />
-    </section>
+        <Projects />
+      </section>
 
       <!-- Sección de certificados -->
       <section id="certificaciones" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          {{ $t('sections.certifications.title') }}
+          {{ locale === 'es' ? 'Certificaciones' : 'Certifications' }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <Certificates />
@@ -305,7 +304,7 @@ const closeMenu = () => {
       <!-- Sección de contacto -->
       <section id="contacto" class="mb-16 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
-          {{ $t('sections.contact.title') }}
+          {{ locale === 'es' ? 'Contacto' : 'Contact' }}
           <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
         </h2>
         <Contact />
@@ -314,7 +313,7 @@ const closeMenu = () => {
       <!-- Footer -->
       <footer class="text-center text-gray-400 py-6 border-t border-gray-800 mt-20">
         <a href="#inicio"><img src="/src/assets/JG-png-logo.png" alt="Logo de Joaquín Guerreiro Apolonia, JG." class="mx-auto mb-4 w-9 inline-block hover:scale-105 transition-transform hover:brightness-125"></a>
-        <p>&copy; {{ new Date().getFullYear() }} Joaquín Guerreiro Apolonia. {{ $t('header.rights') }}</p>
+        <p>&copy; {{ new Date().getFullYear() }} Joaquín Guerreiro Apolonia. {{ locale === 'es' ? 'Todos los derechos reservados' : 'All rights reserved' }}</p>
         <div class="flex justify-center mt-4 space-x-4">
 
           <a href="https://www.linkedin.com/in/joaquin-guerreiro-apolonia/" target="_blank" class="text-primary hover:text-white transition-colors">
@@ -345,7 +344,7 @@ const closeMenu = () => {
   bottom: 0;
   background: 
     linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   z-index: -10;
   filter: blur(0.5px);
 }
