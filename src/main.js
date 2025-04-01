@@ -214,9 +214,21 @@ function replaceTranslationKeys() {
       // Función auxiliar para reemplazar texto en nodos
       function processNode(node) {
         if (node.nodeType === Node.TEXT_NODE) {
-          const trimmedText = node.nodeValue.trim();
+          const text = node.nodeValue;
+          // Buscar cualquier texto que coincida con el patrón de clave de traducción
+          const matches = text.match(/([\w.]+@[\w.]+)/g);
+          if (matches) {
+            matches.forEach(match => {
+              const key = match.split('@')[0];
+              if (translationKeys[key] && translationKeys[key][currentLocale]) {
+                node.nodeValue = text.replace(match, translationKeys[key][currentLocale]);
+              }
+            });
+          }
+          // También buscar claves de traducción directas
+          const trimmedText = text.trim();
           if (translationKeys[trimmedText] && translationKeys[trimmedText][currentLocale]) {
-            node.nodeValue = node.nodeValue.replace(
+            node.nodeValue = text.replace(
               trimmedText, 
               translationKeys[trimmedText][currentLocale]
             );
@@ -224,6 +236,20 @@ function replaceTranslationKeys() {
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           // No procesar scripts ni estilos
           if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+            // Procesar atributos que puedan contener traducciones
+            Array.from(node.attributes).forEach(attr => {
+              if (attr.value && typeof attr.value === 'string') {
+                const matches = attr.value.match(/([\w.]+@[\w.]+)/g);
+                if (matches) {
+                  matches.forEach(match => {
+                    const key = match.split('@')[0];
+                    if (translationKeys[key] && translationKeys[key][currentLocale]) {
+                      attr.value = attr.value.replace(match, translationKeys[key][currentLocale]);
+                    }
+                  });
+                }
+              }
+            });
             node.childNodes.forEach(child => processNode(child));
           }
         }
@@ -263,8 +289,8 @@ function replaceTranslationKeys() {
   const interval = setInterval(() => {
     doReplace();
     count++;
-    if (count >= 5) clearInterval(interval);
-  }, 1000);
+    if (count >= 10) clearInterval(interval); // Aumentar a 10 intentos
+  }, 500); // Reducir el intervalo a 500ms
 }
 
 // Ejecutar la función de reemplazo
