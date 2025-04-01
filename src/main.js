@@ -133,9 +133,23 @@ const messages = {
 
 console.log('Mensajes de traducción definidos:', messages);
 
+// Función segura para acceder a localStorage
+function getLocalStorageItem(key, defaultValue) {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      return localStorage.getItem(key) || defaultValue;
+    } catch (e) {
+      console.error('Error accessing localStorage:', e);
+      return defaultValue;
+    }
+  }
+  return defaultValue;
+}
+
+// Inicializa i18n con una verificación de entorno
 const i18n = createI18n({
   legacy: false,
-  locale: localStorage.getItem('language') || 'es',
+  locale: getLocalStorageItem('language', 'es'),
   fallbackLocale: 'es',
   messages,
   globalInjection: true,
@@ -149,3 +163,18 @@ console.log('i18n configurado, locale actual:', i18n.global.locale.value);
 const app = createApp(App)
 app.use(i18n)
 app.mount('#app')
+
+// Solución temporal para asegurarse de que las traducciones se apliquen
+// después de que el DOM esté listo
+if (typeof window !== 'undefined') {
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      // Forzar una actualización de los componentes
+      const currentLocale = i18n.global.locale.value;
+      i18n.global.locale.value = currentLocale === 'es' ? 'en' : 'es';
+      setTimeout(() => {
+        i18n.global.locale.value = currentLocale;
+      }, 10);
+    }, 100);
+  });
+}
