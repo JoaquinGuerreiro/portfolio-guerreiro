@@ -246,7 +246,10 @@ const closeMenu = () => {
                   class="block py-3 px-6 text-base font-medium transition-colors"
                   :class="activeSection === section ? 'text-primary' : 'text-gray-300 hover:bg-dark hover:text-white'"
                 >
-                  {{ section.charAt(0).toUpperCase() + section.slice(1) }}
+                  {{ section === 'habilidades' ? (locale === 'es' ? 'Habilidades' : 'Skills') : 
+                     section === 'proyectos' ? (locale === 'es' ? 'Proyectos' : 'Projects') : 
+                     section === 'certificaciones' ? (locale === 'es' ? 'Certificaciones' : 'Certifications') : 
+                     (locale === 'es' ? 'Contacto' : 'Contact') }}
                 </a>
               </li>
             </ul>
