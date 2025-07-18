@@ -17,62 +17,50 @@ const certificates = ref([
       en: "Complete Full Stack Web Development career. Creation of RESS Web Pages (Responsive + Server Side Components), and Mobile Applications (PWA). Advanced knowledge in IOT, API handling, Digital Marketing, Servers, UX Design, Data Analysis, Content Creation and Web Video Production. Work with AI applied to code block resolution for large-scale implementations."
     },
     pdfUrl: "",
-    inProgress: true,
     showDetails: true,
+    highlighted: true,
     subjects: [
       {
         cuatrimestre: "Primer cuatrimestre",
         materias: [
-          { nombre: { es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Diseño de Interfaces", en: "Interface Design" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Lógica de Programación", en: "Programming Logic" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Marketing Digital", en: "Digital Marketing" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Comunicación Visual", en: "Visual Communication" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }, tecnologias: ["HTML", "CSS", "Responsive Design"], promedio: 10 },
+          { nombre: { es: "Diseño de Interfaces", en: "Interface Design" }, tecnologias: ["Figma", "Wireframes"], promedio: 10 },
+          { nombre: { es: "Lógica de Programación", en: "Programming Logic" }, tecnologias: ["Pseudocode", "Flowcharts"], promedio: 10 },
+          { nombre: { es: "Marketing Digital", en: "Digital Marketing" }, tecnologias: ["SEO", "Google Analytics"], promedio: 10 },
+          { nombre: { es: "Comunicación Visual", en: "Visual Communication" }, tecnologias: ["Photoshop", "Illustrator"], promedio: 10 },
         ]
       },
       {
         cuatrimestre: "Segundo cuatrimestre",
         materias: [
-          { nombre: { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" }, correlativas: [{ es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }], promedio: 10 },
-          { nombre: { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Programación I", en: "Programming I" }, correlativas: [{ es: "Lógica de Programación", en: "Programming Logic" }], promedio: 5 },
-          { nombre: { es: "Diseño Vectorial", en: "Vector Design" }, correlativas: [], promedio: 9 },
-          { nombre: { es: "Experiencia de Usuario", en: "User Experience" }, correlativas: [], promedio: 9 },
-          { nombre: { es: "Análisis de Datos", en: "Data Analysis" }, correlativas: [{ es: "Marketing Digital", en: "Digital Marketing" }], promedio: 10 },
+          { nombre: { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" }, tecnologias: ["Android", "Mobile UX"], promedio: 10 },
+          { nombre: { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" }, tecnologias: ["Photoshop", "Web Graphics"], promedio: 10 },
+          { nombre: { es: "Programación I", en: "Programming I" }, tecnologias: ["JavaScript", "Variables", "Loops"], promedio: 5 },
+          { nombre: { es: "Diseño Vectorial", en: "Vector Design" }, tecnologias: ["Illustrator", "SVG"], promedio: 9 },
+          { nombre: { es: "Experiencia de Usuario", en: "User Experience" }, tecnologias: ["UX Research", "Personas"], promedio: 9 },
+          { nombre: { es: "Análisis de Datos", en: "Data Analysis" }, tecnologias: ["Excel", "Data Visualization"], promedio: 10 },
         ]
       },
       {
         cuatrimestre: "Tercer cuatrimestre",
         materias: [
-          { nombre: { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" }, correlativas: [], promedio: 9 },
-          { nombre: { es: "Aplicaciones Web Progresivas", en: "Progressive Web Applications" }, correlativas: [{ es: "Programación I", en: "Programming I" }], promedio: 9 },
-          { nombre: { es: "Sistemas Operativos", en: "Operating Systems" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "PP: Programación II", en: "PP: Programming II" }, correlativas: [{ es: "Programación I", en: "Programming I" }], promedio: 9 },
-          { nombre: { es: "Programación con Entornos de Trabajo", en: "Programming with Work Environments" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }, correlativas: [
-            { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" },
-            { es: "Programación I", en: "Programming I" }
-          ], promedio: 9 },
+          { nombre: { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" }, tecnologias: ["Business Model Canvas"], promedio: 9 },
+          { nombre: { es: "Aplicaciones Web Progresivas", en: "Progressive Web Applications" }, tecnologias: ["PWA", "Service Workers"], promedio: 9 },
+          { nombre: { es: "Sistemas Operativos", en: "Operating Systems" }, tecnologias: ["Linux", "Windows"], promedio: 10 },
+          { nombre: { es: "PP: Programación II", en: "PP: Programming II" }, tecnologias: ["OOP", "JavaScript"], promedio: 9 },
+          { nombre: { es: "Programación con Entornos de Trabajo", en: "Programming with Work Environments" }, tecnologias: ["Git", "VSCode"], promedio: 10 },
+          { nombre: { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }, tecnologias: ["React Native", "Mobile Apps"], promedio: 9 },
         ]
       },
       {
         cuatrimestre: "Cuarto cuatrimestre",
         materias: [
-          { nombre: { es: "PP: Clientes Web Mobile", en: "PP: Mobile Web Clients" }, correlativas: [
-            { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }
-          ], promedio: 10 },
-          { nombre: { es: "Internet de las Cosas", en: "Internet of Things" }, correlativas: [], promedio: 9 },
-          { nombre: { es: "Portales y Comercio Electrónico", en: "Portals and E-Commerce" }, correlativas: [
-            { es: "PP: Programación II", en: "PP: Programming II" }
-          ], promedio: 10 },
-          { nombre: { es: "Aplicaciones Híbridas", en: "Hybrid Applications" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "Ética y Deontología Profesional", en: "Professional Ethics and Deontology" }, correlativas: [], promedio: 10 },
-          { nombre: { es: "PP: Proyecto Final", en: "PP: Final Project" }, correlativas: [
-            { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" },
-            { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" },
-            { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" },
-            { es: "PP: Programación II", en: "PP: Programming II" }
-          ], promedio: 10, tesis: true },
+          { nombre: { es: "PP: Clientes Web Mobile", en: "PP: Mobile Web Clients" }, tecnologias: ["Vue.js", "Mobile Web"], promedio: 10 },
+          { nombre: { es: "Internet de las Cosas", en: "Internet of Things" }, tecnologias: ["IoT", "Arduino"], promedio: 9 },
+          { nombre: { es: "Portales y Comercio Electrónico", en: "Portals and E-Commerce" }, tecnologias: ["E-Commerce", "PHP"], promedio: 10 },
+          { nombre: { es: "Aplicaciones Híbridas", en: "Hybrid Applications" }, tecnologias: ["Ionic", "Hybrid Apps"], promedio: 10 },
+          { nombre: { es: "Ética y Deontología Profesional", en: "Professional Ethics and Deontology" }, tecnologias: ["Professional Ethics"], promedio: 10 },
+          { nombre: { es: "PP: Proyecto Final", en: "PP: Final Project" }, tecnologias: ["Full Stack", "Project Management"], promedio: 10, tesis: true },
         ]
       }
     ]
@@ -234,7 +222,12 @@ watch(showModal, (val) => {
     <div 
       v-for="cert in certificates" 
       :key="cert.title"
-      class="bg-dark-light p-6 rounded-xl border border-gray-800 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+      :class="[
+        'bg-dark-light p-6 mb-4 rounded-xl border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10',
+        cert.highlighted
+          ? 'border-2 border-primary/60 shadow-lg animate-pulse-soft hover:brightness-110 transition-all duration-300'
+          : 'border-gray-800 hover:border-primary/30'
+      ]"
     >
       <div class="flex flex-col md:flex-row md:justify-between md:items-start">
         <div>
@@ -293,21 +286,21 @@ watch(showModal, (val) => {
           <div v-for="cuatri in selectedCert.subjects" :key="cuatri.cuatrimestre" class="mb-6">
             <h5 class="font-bold text-lg mb-4 text-primary">{{ getCuatrimestreLabel(cuatri.cuatrimestre, locale) }}</h5>
             <div class="grid grid-cols-12 gap-2 text-left mb-2 font-semibold border-b border-gray-700 pb-1">
-              <div class="col-span-5">{{ locale === 'es' ? 'Materia' : 'Subject' }}</div>
-              <div class="col-span-5">{{ locale === 'es' ? 'Correlativas' : 'Prerequisites' }}</div>
+              <div class="col-span-6">{{ locale === 'es' ? 'Materia' : 'Subject' }}</div>
+              <div class="col-span-4">{{ locale === 'es' ? 'Tecnologías' : 'Technologies' }}</div>
               <div class="col-span-2 text-center">{{ locale === 'es' ? 'Nota' : 'Grade' }}</div>
             </div>
             <div>
               <div v-for="mat in cuatri.materias" :key="mat.nombre[locale]" :class="['grid grid-cols-12 gap-2 items-center py-2 rounded', mat.tesis ? 'bg-primary/10 px-3' : '']">
-                <div class="col-span-5 font-medium flex items-center">
+                <div class="col-span-6 font-medium flex items-center">
                   {{ mat.nombre[locale] }}
                   <span v-if="mat.tesis" class="ml-2 px-2 py-0.5 rounded bg-primary text-white text-xs font-bold">{{ locale === 'es' ? 'Tesis' : 'Thesis' }}</span>
                 </div>
-                <div class="col-span-5">
-                  <span v-if="mat.correlativas && mat.correlativas.length">
-                    {{ mat.correlativas.map(c => c[locale]).join(', ') }}
+                <div class="col-span-4">
+                  <span v-if="mat.tecnologias && mat.tecnologias.length">
+                    {{ mat.tecnologias.join(', ') }}
                   </span>
-                  <span v-else>{{ locale === 'es' ? 'Sin materias correlativas' : 'No prerequisites' }}</span>
+                  <span v-else>-</span>
                 </div>
                 <div class="col-span-2 flex justify-center">
                   <span class="bg-green-700 text-white px-4 py-1 rounded-lg font-bold text-lg">{{ mat.promedio }}</span>
@@ -322,6 +315,13 @@ watch(showModal, (val) => {
 </template>
 
 <style scoped>
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.10), 0 0 10px 2px rgba(0,212,255,0.10); }
+  50% { box-shadow: 0 0 0 3px rgba(0,212,255,0.12), 0 0 16px 6px rgba(0,212,255,0.13); }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2.5s infinite;
+}
 @media (max-width: 900px) {
   .max-w-3xl {
     max-width: 95vw !important;
@@ -331,12 +331,11 @@ watch(showModal, (val) => {
   .max-w-3xl {
     max-width: 100vw !important;
     border-radius: 0 !important;
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }
 .modal-overlay {
-  /* Para asegurar que el overlay cubre todo y permite click fuera */
   z-index: 50;
 }
 </style>
