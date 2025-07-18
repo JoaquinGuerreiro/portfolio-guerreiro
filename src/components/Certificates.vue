@@ -17,7 +17,65 @@ const certificates = ref([
       en: "Complete Full Stack Web Development career. Creation of RESS Web Pages (Responsive + Server Side Components), and Mobile Applications (PWA). Advanced knowledge in IOT, API handling, Digital Marketing, Servers, UX Design, Data Analysis, Content Creation and Web Video Production. Work with AI applied to code block resolution for large-scale implementations."
     },
     pdfUrl: "",
-    inProgress: true
+    inProgress: true,
+    showDetails: true,
+    subjects: [
+      {
+        cuatrimestre: "Primer cuatrimestre",
+        materias: [
+          { nombre: { es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Diseño de Interfaces", en: "Interface Design" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Lógica de Programación", en: "Programming Logic" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Marketing Digital", en: "Digital Marketing" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Comunicación Visual", en: "Visual Communication" }, correlativas: [], promedio: 10 },
+        ]
+      },
+      {
+        cuatrimestre: "Segundo cuatrimestre",
+        materias: [
+          { nombre: { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" }, correlativas: [{ es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }], promedio: 10 },
+          { nombre: { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Programación I", en: "Programming I" }, correlativas: [{ es: "Lógica de Programación", en: "Programming Logic" }], promedio: 5 },
+          { nombre: { es: "Diseño Vectorial", en: "Vector Design" }, correlativas: [], promedio: 9 },
+          { nombre: { es: "Experiencia de Usuario", en: "User Experience" }, correlativas: [], promedio: 9 },
+          { nombre: { es: "Análisis de Datos", en: "Data Analysis" }, correlativas: [{ es: "Marketing Digital", en: "Digital Marketing" }], promedio: 10 },
+        ]
+      },
+      {
+        cuatrimestre: "Tercer cuatrimestre",
+        materias: [
+          { nombre: { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" }, correlativas: [], promedio: 9 },
+          { nombre: { es: "Aplicaciones Web Progresivas", en: "Progressive Web Applications" }, correlativas: [{ es: "Programación I", en: "Programming I" }], promedio: 9 },
+          { nombre: { es: "Sistemas Operativos", en: "Operating Systems" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "PP: Programación II", en: "PP: Programming II" }, correlativas: [{ es: "Programación I", en: "Programming I" }], promedio: 9 },
+          { nombre: { es: "Programación con Entornos de Trabajo", en: "Programming with Work Environments" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }, correlativas: [
+            { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" },
+            { es: "Programación I", en: "Programming I" }
+          ], promedio: 9 },
+        ]
+      },
+      {
+        cuatrimestre: "Cuarto cuatrimestre",
+        materias: [
+          { nombre: { es: "PP: Clientes Web Mobile", en: "PP: Mobile Web Clients" }, correlativas: [
+            { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }
+          ], promedio: 10 },
+          { nombre: { es: "Internet de las Cosas", en: "Internet of Things" }, correlativas: [], promedio: 9 },
+          { nombre: { es: "Portales y Comercio Electrónico", en: "Portals and E-Commerce" }, correlativas: [
+            { es: "PP: Programación II", en: "PP: Programming II" }
+          ], promedio: 10 },
+          { nombre: { es: "Aplicaciones Híbridas", en: "Hybrid Applications" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "Ética y Deontología Profesional", en: "Professional Ethics and Deontology" }, correlativas: [], promedio: 10 },
+          { nombre: { es: "PP: Proyecto Final", en: "PP: Final Project" }, correlativas: [
+            { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" },
+            { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" },
+            { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" },
+            { es: "PP: Programación II", en: "PP: Programming II" }
+          ], promedio: 10, tesis: true },
+        ]
+      }
+    ]
   },
   {
     title: {
@@ -77,6 +135,18 @@ const certificates = ref([
   },
 ]);
 
+const showModal = ref(false);
+const selectedCert = ref(null);
+
+const openDetailsModal = (cert) => {
+  selectedCert.value = cert;
+  showModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+  selectedCert.value = null;
+};
+
 // Función para actualizar textos visualmente
 const updateCertificatesText = () => {
   setTimeout(() => {
@@ -135,10 +205,32 @@ onMounted(() => {
     window.forceUpdateComponents.certificates = forceCertificatesUpdate;
   }
 });
+
+// Traducción de cuatrimestres
+const getCuatrimestreLabel = (cuatri, locale) => {
+  const map = {
+    'Primer cuatrimestre': { es: 'Primer cuatrimestre', en: 'First semester' },
+    'Segundo cuatrimestre': { es: 'Segundo cuatrimestre', en: 'Second semester' },
+    'Tercer cuatrimestre': { es: 'Tercer cuatrimestre', en: 'Third semester' },
+    'Cuarto cuatrimestre': { es: 'Cuarto cuatrimestre', en: 'Fourth semester' },
+  };
+  return map[cuatri] ? map[cuatri][locale] : cuatri;
+};
+
+// Bloquear scroll del body cuando la modal está abierta
+watch(showModal, (val) => {
+  if (typeof window !== 'undefined' && window.document && window.document.body) {
+    if (val) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+});
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div :class="$attrs.class && $attrs.class.includes('modal-overlay')">
     <div 
       v-for="cert in certificates" 
       :key="cert.title"
@@ -155,14 +247,25 @@ onMounted(() => {
           <span class="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary text-sm">
             {{ cert.date }}
           </span>
+          <!-- Botón Detalles reutilizable -->
           <button
-            v-if="cert.inProgress"
+            v-if="cert.showDetails"
+            @click="openDetailsModal(cert)"
+            class="px-4 py-2 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
+          >
+            <i class="fas fa-info-circle"></i>
+            {{ locale === 'es' ? 'Detalles' : 'Details' }}
+          </button>
+          <!-- Botón en progreso -->
+          <button
+            v-else-if="cert.inProgress"
             class="px-4 py-2 bg-gray-700/50 text-gray-400 rounded-lg flex items-center gap-2 cursor-not-allowed"
             disabled
           >
             <i class="fas fa-file-alt"></i>
             {{ locale === 'es' ? 'Título en Trámite' : 'Title in Process' }}
           </button>
+          <!-- Botón certificado -->
           <a
             v-else-if="cert.pdfUrl"
             :href="cert.pdfUrl"
@@ -178,5 +281,62 @@ onMounted(() => {
         {{ typeof cert.description === 'object' ? cert.description[locale] : cert.description }}
       </p>
     </div>
+    <!-- Modal Detalles -->
+    <div v-if="showModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click.self="closeModal">
+      <div class="bg-dark-light pt-4 pb-8 px-8 rounded-xl shadow-lg max-w-3xl w-full relative border border-primary/30 max-h-[90vh] overflow-y-auto mx-2 sm:mx-auto" style="top:0;">
+        <button @click="closeModal" class="sticky top-2  z-10 flex items-center justify-center text-gray-400 hover:text-primary text-xl bg-dark-light rounded-full w-9 h-9" style="position: sticky; margin-left: auto; display: flex;"><i class="fas fa-times"></i></button>
+        <div class="flex items-center gap-3 mb-4">
+          <i class="fas fa-info-circle text-primary text-2xl"></i>
+          <h4 class="text-xl font-bold text-primary">{{ locale === 'es' ? 'Detalles del Certificado' : 'Certificate Details' }}</h4>
+        </div>
+        <div v-if="selectedCert && selectedCert.subjects">
+          <div v-for="cuatri in selectedCert.subjects" :key="cuatri.cuatrimestre" class="mb-6">
+            <h5 class="font-bold text-lg mb-4 text-primary">{{ getCuatrimestreLabel(cuatri.cuatrimestre, locale) }}</h5>
+            <div class="grid grid-cols-12 gap-2 text-left mb-2 font-semibold border-b border-gray-700 pb-1">
+              <div class="col-span-5">{{ locale === 'es' ? 'Materia' : 'Subject' }}</div>
+              <div class="col-span-5">{{ locale === 'es' ? 'Correlativas' : 'Prerequisites' }}</div>
+              <div class="col-span-2 text-center">{{ locale === 'es' ? 'Nota' : 'Grade' }}</div>
+            </div>
+            <div>
+              <div v-for="mat in cuatri.materias" :key="mat.nombre[locale]" :class="['grid grid-cols-12 gap-2 items-center py-2 rounded', mat.tesis ? 'bg-primary/10 px-3' : '']">
+                <div class="col-span-5 font-medium flex items-center">
+                  {{ mat.nombre[locale] }}
+                  <span v-if="mat.tesis" class="ml-2 px-2 py-0.5 rounded bg-primary text-white text-xs font-bold">{{ locale === 'es' ? 'Tesis' : 'Thesis' }}</span>
+                </div>
+                <div class="col-span-5">
+                  <span v-if="mat.correlativas && mat.correlativas.length">
+                    {{ mat.correlativas.map(c => c[locale]).join(', ') }}
+                  </span>
+                  <span v-else>{{ locale === 'es' ? 'Sin materias correlativas' : 'No prerequisites' }}</span>
+                </div>
+                <div class="col-span-2 flex justify-center">
+                  <span class="bg-green-700 text-white px-4 py-1 rounded-lg font-bold text-lg">{{ mat.promedio }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 900px) {
+  .max-w-3xl {
+    max-width: 95vw !important;
+  }
+}
+@media (max-width: 600px) {
+  .max-w-3xl {
+    max-width: 100vw !important;
+    border-radius: 0 !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+.modal-overlay {
+  /* Para asegurar que el overlay cubre todo y permite click fuera */
+  z-index: 50;
+}
+</style>
