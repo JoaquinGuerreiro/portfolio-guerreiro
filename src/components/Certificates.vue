@@ -23,44 +23,44 @@ const certificates = ref([
       {
         cuatrimestre: "Primer cuatrimestre",
         materias: [
-          { nombre: { es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }, tecnologias: ["HTML", "CSS", "Responsive Design"], promedio: 10 },
-          { nombre: { es: "Diseño de Interfaces", en: "Interface Design" }, tecnologias: ["Figma", "Wireframes"], promedio: 10 },
-          { nombre: { es: "Lógica de Programación", en: "Programming Logic" }, tecnologias: ["Pseudocode", "Flowcharts"], promedio: 10 },
-          { nombre: { es: "Marketing Digital", en: "Digital Marketing" }, tecnologias: ["SEO", "Google Analytics"], promedio: 10 },
+          { nombre: { es: "Maquetado y Desarrollo Web", en: "Web Layout and Development" }, tecnologias: ["HTML", "CSS", "Responsive Design, JavaScript"], promedio: 10 },
+          { nombre: { es: "Diseño de Interfaces", en: "Interface Design" }, tecnologias: ["Photoshop", "Landing Pages"], promedio: 10 },
+          { nombre: { es: "Lógica de Programación", en: "Programming Logic" }, tecnologias: ["Pseudocode", "JavaScript"], promedio: 10 },
+          { nombre: { es: "Marketing Digital", en: "Digital Marketing" }, tecnologias: ["SEO/SEM", "Branding, Marketing"], promedio: 10 },
           { nombre: { es: "Comunicación Visual", en: "Visual Communication" }, tecnologias: ["Photoshop", "Illustrator"], promedio: 10 },
         ]
       },
       {
         cuatrimestre: "Segundo cuatrimestre",
         materias: [
-          { nombre: { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" }, tecnologias: ["Android", "Mobile UX"], promedio: 10 },
-          { nombre: { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" }, tecnologias: ["Photoshop", "Web Graphics"], promedio: 10 },
-          { nombre: { es: "Programación I", en: "Programming I" }, tecnologias: ["JavaScript", "Variables", "Loops"], promedio: 5 },
-          { nombre: { es: "Diseño Vectorial", en: "Vector Design" }, tecnologias: ["Illustrator", "SVG"], promedio: 9 },
-          { nombre: { es: "Experiencia de Usuario", en: "User Experience" }, tecnologias: ["UX Research", "Personas"], promedio: 9 },
-          { nombre: { es: "Análisis de Datos", en: "Data Analysis" }, tecnologias: ["Excel", "Data Visualization"], promedio: 10 },
+          { nombre: { es: "PP: Interacción con Dispositivos Móviles", en: "PP: Interaction with Mobile Devices" }, tecnologias: ["HTML", "CSS", "JavaScript", "Bootstrap", "Mobile UX"], promedio: 10 },
+          { nombre: { es: "Diseño Gráfico para Web", en: "Graphic Design for Web" }, tecnologias: ["Photoshop", "Branding", "Web Flow, Landing Pages, Mockups, Wireframes"], promedio: 10 },
+          { nombre: { es: "Programación I", en: "Programming I" }, tecnologias: ["HTML", "CSS", "JavaScript", "ECMAScript", "Loops"], promedio: 5 },
+          { nombre: { es: "Diseño Vectorial", en: "Vector Design" }, tecnologias: ["Illustrator", "SVG, User Flows"], promedio: 9 },
+          { nombre: { es: "Experiencia de Usuario", en: "User Experience" }, tecnologias: ["UX/UI Research", "Personas, User Flows"], promedio: 9 },
+          { nombre: { es: "Análisis de Datos", en: "Data Analysis" }, tecnologias: ["SEO/SEM, SMART, Google Analytics, Google Ads"], promedio: 10 },
         ]
       },
       {
         cuatrimestre: "Tercer cuatrimestre",
         materias: [
-          { nombre: { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" }, tecnologias: ["Business Model Canvas"], promedio: 9 },
-          { nombre: { es: "Aplicaciones Web Progresivas", en: "Progressive Web Applications" }, tecnologias: ["PWA", "Service Workers"], promedio: 9 },
+          { nombre: { es: "Emprendimiento de Negocios", en: "Business Entrepreneurship" }, tecnologias: ["Business Model Canvas", "Scrum", "Kanban", "Agile Methodologies"], promedio: 9 },
+          { nombre: { es: "Aplicaciones Web Progresivas", en: "Progressive Web Applications" }, tecnologias: ["PWA", "Service Workers", "JavaScript", "Local Storage", "Notifications"], promedio: 9 },
           { nombre: { es: "Sistemas Operativos", en: "Operating Systems" }, tecnologias: ["Linux", "Windows"], promedio: 10 },
-          { nombre: { es: "PP: Programación II", en: "PP: Programming II" }, tecnologias: ["OOP", "JavaScript"], promedio: 9 },
-          { nombre: { es: "Programación con Entornos de Trabajo", en: "Programming with Work Environments" }, tecnologias: ["Git", "VSCode"], promedio: 10 },
-          { nombre: { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }, tecnologias: ["React Native", "Mobile Apps"], promedio: 9 },
+          { nombre: { es: "PP: Programación II", en: "PP: Programming II" }, tecnologias: ["HTML", "CSS", "PHP", "MySQL", "Bootstrap"], promedio: 9 },
+          { nombre: { es: "Programación con Entornos de Trabajo", en: "Programming with Work Environments" }, tecnologias: ["Wordpress", "PHP"], promedio: 10 },
+          { nombre: { es: "PP: Aplicaciones para Dispositivos Móviles", en: "PP: Applications for Mobile Devices" }, tecnologias: ["JavaScript", "Bootstrap", "Vite", "Vue.js", "Local Storage"], promedio: 9 },
         ]
       },
       {
         cuatrimestre: "Cuarto cuatrimestre",
         materias: [
-          { nombre: { es: "PP: Clientes Web Mobile", en: "PP: Mobile Web Clients" }, tecnologias: ["Vue.js", "Mobile Web"], promedio: 10 },
+          { nombre: { es: "PP: Clientes Web Mobile", en: "PP: Mobile Web Clients" }, tecnologias: ["SPA", "Vite", "Vue.js", "Firebase", "Tailwind CSS"], promedio: 10 },
           { nombre: { es: "Internet de las Cosas", en: "Internet of Things" }, tecnologias: ["IoT", "Arduino"], promedio: 9 },
-          { nombre: { es: "Portales y Comercio Electrónico", en: "Portals and E-Commerce" }, tecnologias: ["E-Commerce", "PHP"], promedio: 10 },
-          { nombre: { es: "Aplicaciones Híbridas", en: "Hybrid Applications" }, tecnologias: ["Ionic", "Hybrid Apps"], promedio: 10 },
-          { nombre: { es: "Ética y Deontología Profesional", en: "Professional Ethics and Deontology" }, tecnologias: ["Professional Ethics"], promedio: 10 },
-          { nombre: { es: "PP: Proyecto Final", en: "PP: Final Project" }, tecnologias: ["Full Stack", "Project Management"], promedio: 10, tesis: true },
+          { nombre: { es: "Portales y Comercio Electrónico", en: "Portals and E-Commerce" }, tecnologias: ["E-Commerce", "PHP", "Lavarel", "MySQL", "Blade"], promedio: 10 },
+          { nombre: { es: "Aplicaciones Híbridas", en: "Hybrid Applications" }, tecnologias: ["React", "Node.js", "Express", "MongoDB", "RESTful APIs"], promedio: 10 },
+          { nombre: { es: "Ética y Deontología Profesional", en: "Professional Ethics and Deontology" }, tecnologias: ["Professional Ethics, Philosophy"], promedio: 10 },
+          { nombre: { es: "PP: Proyecto Final", en: "PP: Final Project" }, tecnologias: ["Full Stack", "Project Management", "Vue.js", "Vite", "Firebase", "Tailwind CSS", "Marketing", "Branding"], promedio: 10, tesis: true },
         ]
       }
     ]
