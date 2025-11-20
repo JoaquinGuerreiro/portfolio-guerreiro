@@ -16,7 +16,9 @@ const certificates = ref([
       es: "Carrera completa de Desarrollo Web Full Stack. Creación de Páginas Web RESS (Responsive + Server Side Components), y Aplicaciones Móviles (PWA). Conocimientos avanzados en IOT, manejo de APIs, Marketing Digital, Servidores, Diseño UX, Análisis de Datos, Creación de Contenido y Producción de Videos Web. Trabajo con IA aplicada a la resolución de bloques de código para implementaciones a gran escala.",
       en: "Complete Full Stack Web Development career. Creation of RESS Web Pages (Responsive + Server Side Components), and Mobile Applications (PWA). Advanced knowledge in IOT, API handling, Digital Marketing, Servers, UX Design, Data Analysis, Content Creation and Web Video Production. Work with AI applied to code block resolution for large-scale implementations."
     },
+
     pdfUrl: "/certificates/title-constance.pdf",
+
     showDetails: true,
     highlighted: true,
     subjects: [
@@ -236,6 +238,7 @@ watch(showModal, (val) => {
           </h3>
           <p class="text-gray-300 font-semibold italic">{{ cert.issuer }}</p>
         </div>
+
         <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-3 justify-end">
           <span class="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary text-sm">
             {{ cert.date }}
