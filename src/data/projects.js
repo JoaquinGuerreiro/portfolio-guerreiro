@@ -31,6 +31,20 @@ export default [
       pdfUrl2: "https://www.canva.com/design/DAGWSIPCtew/5rbH57JdeYjHIMqxo6ndUg/view",
       image: "/projects/rhinofit.jpg",
     },
+    {
+      title: {
+        es: "E-Commerce Nike con WooCommerce",
+        en: "Nike WooCommerce E-Commerce"
+      },
+      description: {
+        es: "Simulación completa de tienda Nike creada con WordPress + WooCommerce. Incluye catálogo integral, carrito, categorías, etiquetas, filtros por talles y género, control de stock, precios y un checkout personalizado para reflejar la experiencia de compra.",
+        en: "Full Nike store simulation built with WordPress + WooCommerce. Includes a complete catalog, cart, categories, tags, size and gender filters, stock control, pricing, and a customized checkout to mirror the shopping experience."
+      },
+      github: null,
+      demo: null,
+      pdfUrl: null,
+      image: "/projects/nike-exclusives.jpg"
+    },
     { 
       title: {
         es: "Gestor de Proyectos y Tareas con arquitectura MERN Stack",
@@ -45,6 +59,51 @@ export default [
       pdfUrl: null,
       image: "/projects/gestor-proyectos.jpg",
     },
+    { 
+      title: {
+        es: "PWA de gestor de Rutinas de Gimnasio 'My Workout'",
+        en: "Gym Routine Manager PWA 'My Workout'"
+      },
+      description: {
+        es: "Aplicación Web Progresiva que permite gestionar rutinas de gimnasio, agregando, editando y eliminando ejercicios. Fue realizada con HTML, CSS, JavaScript y Bootstrap. Implementa Service Worker, Web Manifest, Local Storage, Caché dinámico y notificaciones push.",
+        en: "Progressive Web Application for managing gym routines, allowing users to add, edit, and delete exercises. Built with HTML, CSS, JavaScript, and Bootstrap. Implements Service Worker, Web Manifest, Local Storage, Dynamic Cache, and push notifications."
+      },
+      github: "https://github.com/JoaquinGuerreiro/my-workout-pwa",
+      demo: "https://my-workout-pwa.vercel.app/",
+      pdfUrl: null,
+      image: "/projects/my-workout.jpg",
+    },
+
+    { 
+      title: {
+        es: "E-Commerce de Palm Angels",
+        en: "Palm Angels E-Commerce"
+      },
+      description: {
+        es: "Tienda Online con Carrito que simula un sistema de Checkout. Incluye catálogo de productos, sistema de filtros, formulario de contacto, registro, login, carrito de compras (con la gestión del mismo) y sistema de checkout. Se realizó con HTML, CSS, PHP y MySQL.",
+        en: "Online Store with Shopping Cart that simulates a Checkout system. Includes product catalog, filter system, contact form, registration, login, shopping cart management, and checkout system. Built with HTML, CSS, PHP, and MySQL."
+      },
+      github: "https://github.com/JoaquinGuerreiro/palm-angels-ecommerce",
+      demo: null,
+      pdfUrl: null,
+      image: "/projects/palm-angels.jpg",
+    },
+    
+    {
+      title: {
+        es: "WordPress Fan Page UFC Fight Pass",
+        en: "WordPress Fan Page UFC Fight Pass"
+      },
+      description: {
+        es: "Sitio informativo en WordPress que promociona próximas peleas de la UFC, combina secciones tipo blog con noticias, galerías y bloques dedicados al servicio UFC Fight Pass. Pensado como portal de fans, con contenidos dinámicos y estilo editorial.",
+        en: "WordPress informative site that promotes upcoming UFC fights, mixes blog-style sections with news, galleries and blocks dedicated to the UFC Fight Pass service. Designed as a fan portal with dynamic content and editorial styling."
+      },
+      github: null,
+      demo: null,
+      pdfUrl: null,
+      image: "/projects/ufc-fight-pass.jpg"
+    },
+
     { 
       title: {
         es: "Gestor de Rutinas con Node.js y MongoDB",
@@ -73,34 +132,7 @@ export default [
       pdfUrl: null,
       image: "/projects/social-rockin.jpg",
     },
-    { 
-      title: {
-        es: "E-Commerce de Palm Angels",
-        en: "Palm Angels E-Commerce"
-      },
-      description: {
-        es: "Tienda Online con Carrito que simula un sistema de Checkout. Incluye catálogo de productos, sistema de filtros, formulario de contacto, registro, login, carrito de compras (con la gestión del mismo) y sistema de checkout. Se realizó con HTML, CSS, PHP y MySQL.",
-        en: "Online Store with Shopping Cart that simulates a Checkout system. Includes product catalog, filter system, contact form, registration, login, shopping cart management, and checkout system. Built with HTML, CSS, PHP, and MySQL."
-      },
-      github: "https://github.com/JoaquinGuerreiro/palm-angels-ecommerce",
-      demo: null,
-      pdfUrl: null,
-      image: "/projects/palm-angels.jpg",
-    },
-    { 
-      title: {
-        es: "PWA de gestor de Rutinas de Gimnasio 'My Workout'",
-        en: "Gym Routine Manager PWA 'My Workout'"
-      },
-      description: {
-        es: "Aplicación Web Progresiva que permite gestionar rutinas de gimnasio, agregando, editando y eliminando ejercicios. Fue realizada con HTML, CSS, JavaScript y Bootstrap. Implementa Service Worker, Web Manifest, Local Storage, Caché dinámico y notificaciones push.",
-        en: "Progressive Web Application for managing gym routines, allowing users to add, edit, and delete exercises. Built with HTML, CSS, JavaScript, and Bootstrap. Implements Service Worker, Web Manifest, Local Storage, Dynamic Cache, and push notifications."
-      },
-      github: "https://github.com/JoaquinGuerreiro/my-workout-pwa",
-      demo: "https://my-workout-pwa.vercel.app/",
-      pdfUrl: null,
-      image: "/projects/my-workout.jpg",
-    },
+    
     { 
       title: {
         es: "Página Web de 'Mi Firulais'",
