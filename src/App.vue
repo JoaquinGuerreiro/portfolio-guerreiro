@@ -271,7 +271,7 @@ const closeMenu = () => {
       <section id="habilidades" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
           {{ locale === 'es' ? 'Habilidades y Tecnologías' : 'Skills & Technologies' }}
-          <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
+          <span class="block h-1 w-24 bg-green mx-auto mt-4"></span>
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div v-for="habilidad in habilidades" :key="habilidad.nombre" 
@@ -286,7 +286,7 @@ const closeMenu = () => {
       <section id="proyectos" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
           {{ locale === 'es' ? 'Mis Proyectos' : 'My Projects' }}
-          <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
+          <span class="block h-1 w-24 bg-green mx-auto mt-4"></span>
         </h2>
         <Projects />
       </section>
@@ -295,7 +295,7 @@ const closeMenu = () => {
       <section id="certificaciones" class="mb-28 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
           {{ locale === 'es' ? 'Certificaciones' : 'Certifications' }}
-          <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
+          <span class="block h-1 w-24 bg-green mx-auto mt-4"></span>
         </h2>
         <Certificates />
       </section>
@@ -304,7 +304,7 @@ const closeMenu = () => {
       <section id="contacto" class="mb-16 scroll-mt-32">
         <h2 class="text-3xl font-bold mb-12 text-center text-primary relative">
           {{ locale === 'es' ? 'Contacto' : 'Contact' }}
-          <span class="block h-1 w-24 bg-primary mx-auto mt-4"></span>
+          <span class="block h-1 w-24 bg-green mx-auto mt-4"></span>
         </h2>
         <Contact />
       </section>

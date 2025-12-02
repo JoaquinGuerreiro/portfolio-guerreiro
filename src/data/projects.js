@@ -33,12 +33,12 @@ export default [
     },
     {
       title: {
-        es: "E-Commerce Nike con WooCommerce",
+        es: "E-Commerce Nike WooCommerce",
         en: "Nike WooCommerce E-Commerce"
       },
       description: {
-        es: "Simulación completa de tienda Nike creada con WordPress + WooCommerce. Incluye catálogo integral, carrito, categorías, etiquetas, filtros por talles y género, control de stock, precios y un checkout personalizado para reflejar la experiencia de compra.",
-        en: "Full Nike store simulation built with WordPress + WooCommerce. Includes a complete catalog, cart, categories, tags, size and gender filters, stock control, pricing, and a customized checkout to mirror the shopping experience."
+        es: "Simulación completa de tienda Nike creada con WordPress + WooCommerce. Se utilizó Elementor Pro como editor de páginas y WooCommerce para la gestión de productos y ventas. Incluye catálogo integral, carrito, categorías, etiquetas, filtros por talles y género, control de stock, precios y un checkout personalizado para reflejar la experiencia de compra.",
+        en: "Full Nike store simulation built with WordPress + WooCommerce. Elementor Pro was used as the page editor and WooCommerce for product and sales management. Includes a complete catalog, cart, categories, tags, size and gender filters, stock control, pricing, and a customized checkout to mirror the shopping experience."
       },
       github: null,
       demo: null,

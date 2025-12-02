@@ -9,7 +9,8 @@ export default {
         colors: {
           'primary': '#00b4d8',
           'dark': '#0d1117',
-          'dark-light': '#161b22'
+          'dark-light': '#161b22',
+          'green': '#42b983',
         },
         animation: {
           'gradient': 'gradient 8s linear infinite',

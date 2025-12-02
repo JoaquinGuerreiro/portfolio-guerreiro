@@ -240,14 +240,14 @@ watch(showModal, (val) => {
         </div>
 
         <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-3 justify-end">
-          <span class="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary text-sm">
+          <span class="inline-block px-4 py-1 bg-primary/10 rounded-full text-green text-sm">
             {{ cert.date }}
           </span>
           <template v-if="cert.showDetails">
             <!-- Botón Detalles reutilizable -->
             <button
               @click="openDetailsModal(cert)"
-              class="px-4 py-2 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
+              class="px-4 py-2 bg-primary/20 text-green rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
             >
               <i class="fas fa-info-circle"></i>
               {{ locale === 'es' ? 'Detalles' : 'Details' }}
@@ -267,7 +267,7 @@ watch(showModal, (val) => {
             v-if="cert.pdfUrl"
             :href="cert.pdfUrl"
             target="_blank"
-            class="px-4 py-2 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
+            class="px-4 py-2 bg-primary/20 text-green rounded-lg hover:bg-primary/30 transition-colors flex items-center gap-2"
           >
             <i class="fas fa-file-pdf"></i>
             {{ locale === 'es' ? 'Certificado' : 'Certificate' }}
